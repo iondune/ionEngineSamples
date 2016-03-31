@@ -71,11 +71,8 @@ void CApplication::LoadAssets()
 {
 	CubeMesh = CGeometryCreator::CreateCube();
 
-	SimpleShader = AssetManager->LoadShader("Simple");
 	SimpleTextureShader = AssetManager->LoadShader("SimpleTexture");
-	DiffuseShader = AssetManager->LoadShader("Diffuse");
 	SpecularShader = AssetManager->LoadShader("Specular");
-	DiffuseTextureShader = AssetManager->LoadShader("DiffuseTexture");
 
 	GroundTexture = AssetManager->LoadTexture("Ground.png");
 	if (GroundTexture)
