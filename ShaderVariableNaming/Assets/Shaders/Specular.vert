@@ -1,7 +1,7 @@
 #version 150
 
-in vec3 vPosition;
-in vec3 vNormal;
+in vec3 vPos;
+in vec3 vNor;
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
@@ -15,10 +15,10 @@ out vec3 fWorldPosition;
 
 void main()
 {
-	vec4 Position = uModelMatrix * vec4(vPosition, 1.0);
+	vec4 Position = uModelMatrix * vec4(vPos, 1.0);
 
 	gl_Position = uProjectionMatrix * uViewMatrix * Position;
 	fEye = normalize(uCameraPosition - Position.xyz);
-	fNormal = vNormal;
+	fNormal = vNor;
 	fWorldPosition = Position.xyz;
 }

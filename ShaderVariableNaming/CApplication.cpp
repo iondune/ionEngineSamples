@@ -113,11 +113,26 @@ void CApplication::AddSceneObjects()
 	RenderPass->AddSceneObject(GroundObject);
 
 	vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("Assets/Meshes/dragon43k.obj", "Assets/Meshes/");
-	CSimpleMeshSceneObject * Object = new CSimpleMeshSceneObject();
-	Object->SetMesh(Meshes[0]);
-	Object->SetShader(SpecularShader);
-	Object->SetPosition(vec3f(0, 1, 0));
-	RenderPass->AddSceneObject(Object);
+
+	if (Meshes.size())
+	{
+		SharedPointer<Graphics::IIndexBuffer> IndexBuffer = Meshes[0]->CreateIndexBuffer(GraphicsAPI);
+		SharedPointer<Graphics::IVertexBuffer> VertexBuffer = Meshes[0]->CreateVertexBuffer(GraphicsAPI);
+		Graphics::SInputLayoutElement InputLayout[] =
+		{
+			{ "vPos", 3, Graphics::EAttributeType::Float },
+			{ "vNor", 3, Graphics::EAttributeType::Float },
+			{ "vTex", 2, Graphics::EAttributeType::Float },
+		};
+		VertexBuffer->SetInputLayout(InputLayout, ION_ARRAYSIZE(InputLayout));
+
+		CSimpleSceneObject * Object = new CSimpleSceneObject();
+		Object->SetVertexBuffer(VertexBuffer);
+		Object->SetIndexBuffer(IndexBuffer);
+		Object->SetShader(SpecularShader);
+		Object->SetPosition(vec3f(0, 1, 0));
+		RenderPass->AddSceneObject(Object);
+	}
 
 	DirectionalLight = new CDirectionalLight();
 	DirectionalLight->SetDirection(vec3f(1, -2, -2));
