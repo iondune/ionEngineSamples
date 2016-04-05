@@ -6,6 +6,41 @@ using namespace ion::Scene;
 using namespace ion::Graphics;
 
 
+ion::Scene::CSimpleMesh * CreateLineMesh(vector<vec3f> const & Points, vec3f const & Center, float const Width = 0.1f, float const Overshoot = 0.1f)
+{
+	ion::Scene::CSimpleMesh * Mesh = new ion::Scene::CSimpleMesh();
+
+	for (size_t i = 1; i < Points.size(); ++ i)
+	{
+		vec3f const & Current = Points[i - 1];
+		vec3f const & Next = Points[i];
+
+		vec3f const Normal = (Current - Center).GetNormalized();
+		vec3f const Tangent = (Next - Current).GetNormalized();
+		vec3f const Bitangent = Cross(Normal, Tangent).GetNormalized();
+
+		uint const Start = (uint) Mesh->Vertices.size();
+
+		Mesh->Vertices.push_back(CSimpleMesh::SVertex(Current - Tangent * Overshoot + Bitangent * Width, Normal));
+		Mesh->Vertices.push_back(CSimpleMesh::SVertex(Current - Tangent * Overshoot - Bitangent * Width, Normal));
+		Mesh->Vertices.push_back(CSimpleMesh::SVertex(Next + Tangent * Overshoot + Bitangent * Width, Normal));
+		Mesh->Vertices.push_back(CSimpleMesh::SVertex(Next + Tangent * Overshoot - Bitangent * Width, Normal));
+
+		CSimpleMesh::STriangle Triangle;
+		Triangle.Indices[0] = Start + 0;
+		Triangle.Indices[1] = Start + 1;
+		Triangle.Indices[2] = Start + 3;
+		Mesh->Triangles.push_back(Triangle);
+
+		Triangle.Indices[0] = Start + 0;
+		Triangle.Indices[1] = Start + 3;
+		Triangle.Indices[2] = Start + 2;
+		Mesh->Triangles.push_back(Triangle);
+	}
+
+	return Mesh;
+}
+
 int main()
 {
 	////////////////////
@@ -58,13 +93,12 @@ int main()
 
 	CPerspectiveCamera * Camera = new CPerspectiveCamera(Window->GetAspectRatio());
 	Camera->SetPosition(vec3f(0, 4, 0.01f));
-	Camera->SetLookAtTarget(vec3f(0, 0, 0));
 	Camera->SetFocalLength(0.4f);
 	RenderPass->SetActiveCamera(Camera);
 
 	CCameraController * Controller = new CCameraController(Camera);
-	Controller->SetTheta(15.f * Constants32::Pi / 48.f);
-	Controller->SetPhi(-Constants32::Pi / 16.f);
+	Controller->SetTheta(-15.f * Constants32::Pi / 48.f);
+	Controller->SetPhi(-Constants32::Pi / 2.2f);
 	Window->AddListener(Controller);
 	TimeManager->MakeUpdateTick(0.02)->AddListener(Controller);
 
@@ -81,13 +115,20 @@ int main()
 	SceneObject3->SetPosition(vec3f(-4, 0, 0));
 	RenderPass->AddSceneObject(SceneObject3);
 
-	CSimpleMesh * Mesh = new CSimpleMesh();
-
 	CSimpleMeshSceneObject * SceneObject4 = new CSimpleMeshSceneObject();
 	SceneObject4->SetShader(ShaderProgram);
 	SceneObject4->SetFeatureEnabled(EDrawFeature::Wireframe, true);
 	RenderPass->AddSceneObject(SceneObject4);
 
+	srand(1234);
+	vec3f const Center = vec3f(0, -50, 0);
+	vector<vec3f> Points;
+	Points.push_back(vec3f(0, -1, 0));
+
+	for (uint i = 0; i < 12; ++ i)
+	{
+		Points.push_back(Points.back() + vec3f(nrand()*(frand() + 1), 0, nrand()*(frand() + 1)));
+	}
 
 	///////////////
 	// Main Loop //
@@ -100,45 +141,7 @@ int main()
 		time += 0.01f;
 		RenderTarget->ClearColorAndDepth();
 
-		Mesh->Clear();
-
-		srand(1234);
-		vec3f const Center = vec3f(0, -50, 0);
-		vec3f X = vec3f(0, -1, 0);
-
-		static uint const SubdivisionNodes = 6;
-		for (uint i = 0; i < SubdivisionNodes; ++ i)
-		{
-			vec3f const Next = X + vec3f(nrand(), 0, nrand());
-
-			vec3f const Normal = (X - Center).GetNormalized();
-			vec3f const Tangent = (Next - X).GetNormalized();
-			vec3f const Bitangent = Cross(Normal, Tangent).GetNormalized();
-
-			float const Offset = 0.1f;
-			float const Overshoot = 0.05f * (1 - cos(time));
-
-			uint const Start = (uint) Mesh->Vertices.size();
-
-			Mesh->Vertices.push_back(CSimpleMesh::SVertex(X - Tangent * Overshoot + Bitangent * Offset, Normal));
-			Mesh->Vertices.push_back(CSimpleMesh::SVertex(X - Tangent * Overshoot - Bitangent * Offset, Normal));
-			Mesh->Vertices.push_back(CSimpleMesh::SVertex(Next + Tangent * Overshoot + Bitangent * Offset, Normal));
-			Mesh->Vertices.push_back(CSimpleMesh::SVertex(Next + Tangent * Overshoot - Bitangent * Offset, Normal));
-
-			CSimpleMesh::STriangle Triangle;
-			Triangle.Indices[0] = Start + 0;
-			Triangle.Indices[1] = Start + 1;
-			Triangle.Indices[2] = Start + 3;
-			Mesh->Triangles.push_back(Triangle);
-
-			Triangle.Indices[0] = Start + 0;
-			Triangle.Indices[1] = Start + 3;
-			Triangle.Indices[2] = Start + 2;
-			Mesh->Triangles.push_back(Triangle);
-
-			X = Next;
-		}
-		SceneObject4->SetMesh(Mesh);
+		SceneObject4->SetMesh(CreateLineMesh(Points, Center, 0.1f, 0.05f*(1 - cos(time))));
 
 		SceneManager->DrawAll();
 		Window->SwapBuffers();
