@@ -132,6 +132,11 @@ void CApplication::AddSceneObjects()
 	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(-3, 2, -5)));
 	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(-3, 2, -3)));
 	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(-1, 1, 0)));
+	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(-2, 1, 0)));
+	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(-3, 1, 0)));
+	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(-4, 1, 0)));
+	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(-5, 1, 0)));
+	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(-6, 1, 0)));
 	BillboardSystem->SendBillboardsToGPU();
 
 	CDirectionalLight * Light = new CDirectionalLight();
