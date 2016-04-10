@@ -4,7 +4,6 @@
 using namespace ion;
 using namespace ion::Scene;
 using namespace ion::Graphics;
-using namespace ion::Animation;
 
 
 CBillboardSystemSceneObject::CBillboardSystemSceneObject()
