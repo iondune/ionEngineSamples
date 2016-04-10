@@ -31,6 +31,9 @@ public:
 	void Load(ion::Scene::CRenderPass * RenderPass);
 	void Draw(ion::Scene::CRenderPass * RenderPass);
 
+	void SetGlobalScale(float const Scale);
+	float GetGlobalScale() const;
+
 	SharedPointer<ion::Graphics::IShaderProgram> Shader;
 	SharedPointer<ion::Graphics::ITexture2D> Texture;
 	vector<SBillboard> Billboards;
@@ -41,5 +44,7 @@ protected:
 
 	SharedPointer<ion::Graphics::IPipelineState> PipelineState;
 	SharedPointer<ion::Graphics::IVertexBuffer> InstanceBuffer;
+
+	ion::Graphics::CUniform<float> uGlobalScale = 1;
 
 };

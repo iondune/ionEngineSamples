@@ -9,6 +9,7 @@ in float vInstanceSize;
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
+uniform float uGlobalScale;
 
 out vec2 fTexCoords;
 
@@ -19,7 +20,7 @@ void main()
 	vec3 CameraUp = vec3(uViewMatrix[0][1], uViewMatrix[1][1], uViewMatrix[2][1]);
 
 	vec3 Position = vInstanceLocation;
-	vec2 Size = vec2(vInstanceSize);
+	vec2 Size = vec2(vInstanceSize * uGlobalScale);
 
 	vec2 VertexOffset = vPosition;
 	VertexOffset *= Size;

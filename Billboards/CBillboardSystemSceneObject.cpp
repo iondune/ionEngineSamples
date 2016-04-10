@@ -57,6 +57,7 @@ void CBillboardSystemSceneObject::Load(CRenderPass * RenderPass)
 	PipelineState->SetVertexBuffer(0, VertexBuffer);
 	PipelineState->SetVertexBuffer(1, InstanceBuffer);
 	PipelineState->SetTexture("uTexture", Texture);
+	PipelineState->SetUniform("uGlobalScale", uGlobalScale);
 	PipelineState->SetBlendMode(EBlendMode::Alpha);
 
 	if (NeedToLoadInstances)
@@ -84,4 +85,14 @@ void CBillboardSystemSceneObject::Load(CRenderPass * RenderPass)
 void CBillboardSystemSceneObject::Draw(CRenderPass * RenderPass)
 {
 	RenderPass->SubmitPipelineStateForRendering(PipelineState, this, (uint) Billboards.size(), 1);
+}
+
+void CBillboardSystemSceneObject::SetGlobalScale(float const Scale)
+{
+	uGlobalScale = Scale;
+}
+
+float CBillboardSystemSceneObject::GetGlobalScale() const
+{
+	return uGlobalScale;
 }

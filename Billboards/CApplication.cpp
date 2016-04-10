@@ -1,6 +1,5 @@
 
 #include "CApplication.h"
-#include "CBillboardSystemSceneObject.h"
 
 using namespace ion;
 using namespace ion::Scene;
@@ -120,7 +119,7 @@ void CApplication::AddSceneObjects()
 	GroundObject->SetTexture("uTexture", GroundTexture);
 	RenderPass->AddSceneObject(GroundObject);
 
-	CBillboardSystemSceneObject * BillboardSystem = new CBillboardSystemSceneObject();
+	BillboardSystem = new CBillboardSystemSceneObject();
 	BillboardSystem->Shader = BillboardShader;
 	BillboardSystem->Texture = BillboardTexture;
 	RenderPass->AddSceneObject(BillboardSystem);
@@ -167,6 +166,8 @@ void CApplication::MainLoop()
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
+
+		BillboardSystem->SetGlobalScale(3.f + 2.f * (float) sin(TimeManager->GetRunTime()));
 
 		// Draw
 		RenderTarget->ClearColorAndDepth();

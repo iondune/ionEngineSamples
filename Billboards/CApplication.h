@@ -2,6 +2,7 @@
 #pragma once
 
 #include <ionEngine.h>
+#include "CBillboardSystemSceneObject.h"
 
 
 class CApplication : public Singleton<CApplication>, public IEventListener
@@ -41,6 +42,8 @@ protected:
 
 	SharedPointer<ion::Graphics::IRenderTarget> RenderTarget = nullptr;
 	ion::Scene::CPerspectiveCamera * FreeCamera = nullptr;
+
+	CBillboardSystemSceneObject * BillboardSystem = nullptr;
 
 private:
 
