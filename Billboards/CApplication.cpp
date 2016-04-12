@@ -52,7 +52,7 @@ void CApplication::InitializeEngine()
 	WindowManager->Init();
 	TimeManager->Init();
 
-	Window = WindowManager->CreateWindow(vec2i(1600, 900), "Load OBJ", EWindowType::Windowed);
+	Window = WindowManager->CreateWindow(vec2i(1600, 900), "Billboards", EWindowType::Windowed);
 	Window->AddChild(this);
 
 	GraphicsAPI = new COpenGLAPI();

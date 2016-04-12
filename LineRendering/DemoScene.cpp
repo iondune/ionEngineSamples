@@ -148,7 +148,7 @@ int main()
 
 	WindowManager->Init();
 	TimeManager->Init();
-	CWindow * Window = WindowManager->CreateWindow(vec2i(1600, 900), "DemoScene", EWindowType::Windowed);
+	CWindow * Window = WindowManager->CreateWindow(vec2i(1600, 900), "Line Rendering", EWindowType::Windowed);
 
 	IGraphicsAPI * GraphicsAPI = new COpenGLAPI();
 	SceneManager->Init(GraphicsAPI);
