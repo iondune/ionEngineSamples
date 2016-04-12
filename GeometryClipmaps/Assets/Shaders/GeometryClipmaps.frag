@@ -214,8 +214,7 @@ void main()
 	const float Ambient = 0.4;
 	const float Diffuse = 0.6;
 	outColor = vec4(vec3(Ambient + Diffuse * Lighting) * Color, 1.0);
-	// outColor = vec4(vec3(Ambient + Diffuse * Lighting) * Color * vec3(1.0 - getOcclusion(0.2) * 0.1), 1.0);
-	// outColor = vec4(vec3(1.0 - getOcclusion(0.2) * 0.1), 1.0);
+
 
 	float Distance = gl_FragCoord.z / gl_FragCoord.w;
 	const float Far = 15000.0;

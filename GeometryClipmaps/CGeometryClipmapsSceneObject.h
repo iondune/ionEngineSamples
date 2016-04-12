@@ -10,6 +10,19 @@ class CGeometryClipmapsSceneObject : public ion::Scene::ISceneObject
 
 public:
 
+	class IHeightInput
+	{
+
+	public:
+
+		virtual float GetTerrainHeight(vec2i const & Position) = 0;
+		virtual color3f GetTerrainColor(vec2i const & Position) = 0;
+		virtual vec3f GetTerrainNormal(vec2i const & Position);
+
+	};
+
+	IHeightInput * HeightInput = nullptr;
+
 	static int const GeometrySize = 64;
 	static int const HeightmapResolution = GeometrySize + 2;
 	static int const LayerCount = 6;
@@ -73,6 +86,8 @@ public:
 		int GenerateAndUploadNewData(vec2i const & DataOffsetMove);
 
 	protected:
+
+		CGeometryClipmapsSceneObject * Owner = nullptr;
 		
 		int SendSample(int const x1, int const y1, int const x2, int const y2, vec2i const & NewClipPos, vec2i const & NewDataOffset);
 		void UploadSample(vec2i const & LowerBound, vec2i const & UpperBound, vec2i const & NewDataOffset);

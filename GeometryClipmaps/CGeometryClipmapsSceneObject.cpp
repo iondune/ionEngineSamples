@@ -369,3 +369,15 @@ void CGeometryClipmapsSceneObject::SetWireframeEnabled(bool const Enabled)
 		}
 	}
 }
+
+vec3f CGeometryClipmapsSceneObject::IHeightInput::GetTerrainNormal(vec2i const & Position)
+{
+	double const s01 = GetTerrainHeight(Position + vec2i(-1, 0));
+	double const s21 = GetTerrainHeight(Position + vec2i(+1, 0));
+	double const s10 = GetTerrainHeight(Position + vec2i(0, -1));
+	double const s12 = GetTerrainHeight(Position + vec2i(0, +1));
+
+	vec3d const va = Normalize(vec3d(2, s21 - s01, 0));
+	vec3d const vb = Normalize(vec3d(0, s12 - s10, 2));
+	return Normalize(Cross(vb, va));
+}

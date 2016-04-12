@@ -95,11 +95,31 @@ void CApplication::SetupScene()
 
 void CApplication::AddSceneObjects()
 {
+	class SimpleHeight : public CGeometryClipmapsSceneObject::IHeightInput
+	{
+
+	public:
+
+		float GetTerrainHeight(vec2i const & Position)
+		{
+			float const Input = (float) (Length(vec2f(Position)));
+
+			return -cos(Input * 0.01f) * 15 - cos(Input * 0.5f) * 2;
+		}
+
+		color3f GetTerrainColor(vec2i const & Position)
+		{
+			return color3f(abs(fmodf((float) Position.X * 0.1f, 1.f)), abs(fmodf((float) Position.Y * 0.1f, 1.f)), 0.5f);
+		}
+
+	};
+
 	GeometryClipmapsObject = new CGeometryClipmapsSceneObject();
 	GeometryClipmapsObject->SetWireframeEnabled(true);
 	GeometryClipmapsObject->Shader = GeometryClipmapsShader;
-	GeometryClipmapsObject->uSamplingMode = 3;
+	GeometryClipmapsObject->uSamplingMode = 2;
 	GeometryClipmapsObject->UseCameraPosition = true;
+	GeometryClipmapsObject->HeightInput = new SimpleHeight();
 	RenderPass->AddSceneObject(GeometryClipmapsObject);
 
 	CDirectionalLight * Light = new CDirectionalLight();

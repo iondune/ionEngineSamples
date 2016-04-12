@@ -4,6 +4,8 @@
 
 CGeometryClipmapsSceneObject::SLayer::SLayer(CGeometryClipmapsSceneObject * Owner, int const i, ion::Scene::CRenderPass * RenderPass)
 {
+	this->Owner = Owner;
+
 	// Scaling Parameters
 	Level = i;
 	ScaleFactor = 1 << i;
@@ -83,9 +85,9 @@ int CGeometryClipmapsSceneObject::SLayer::SendSample(int const x1, int const y1,
 	///////////////////////
 
 	int const Size = (x2 - x1) * (y2 - y1);
-	float * const Data = new float[Size];
-	float * const Color = new float[Size * 3];
-	float * const Normal = new float[Size * 3];
+	float * const HeightData = new float[Size];
+	float * const ColorData = new float[Size * 3];
+	float * const NormalData = new float[Size * 3];
 
 	bool Succeeded = true;
 
@@ -111,18 +113,26 @@ int CGeometryClipmapsSceneObject::SLayer::SendSample(int const x1, int const y1,
 				Tile += (NewClipPos - vec2i(1));
 				Tile *= ScaleFactor;
 
+				float Height = 0;
+				vec3f Normal = vec3f(0, 1, 0);
+				color3f Color = Colors::Blue;
 
-				Data[Index] = (float) (Tile.X + Tile.Y) * 0.1f;
+				if (Owner->HeightInput)
+				{
+					Height = Owner->HeightInput->GetTerrainHeight(Tile);
+					Normal = Owner->HeightInput->GetTerrainNormal(Tile);
+					Color = Owner->HeightInput->GetTerrainColor(Tile);
+				}
 
-				color3f const colorSample = Colors::Blue;
-				Color[Index * 3 + 0] = colorSample.Red;
-				Color[Index * 3 + 1] = colorSample.Green;
-				Color[Index * 3 + 2] = colorSample.Blue;
+				HeightData[Index] = Height;
 
-				vec3f const normalSample = vec3f(0, 1, 0);
-				Normal[Index * 3 + 0] = normalSample.X;
-				Normal[Index * 3 + 1] = normalSample.Y;
-				Normal[Index * 3 + 2] = normalSample.Z;
+				ColorData[Index * 3 + 0] = Color.Red;
+				ColorData[Index * 3 + 1] = Color.Green;
+				ColorData[Index * 3 + 2] = Color.Blue;
+
+				NormalData[Index * 3 + 0] = Normal.X;
+				NormalData[Index * 3 + 1] = Normal.Y;
+				NormalData[Index * 3 + 2] = Normal.Z;
 			}
 		}
 	}
@@ -132,13 +142,13 @@ int CGeometryClipmapsSceneObject::SLayer::SendSample(int const x1, int const y1,
 	// Buffer Upload & Cleanup //
 	/////////////////////////////
 
-	HeightMap->UploadSubRegion(Data, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::R, ion::Graphics::EScalarType::Float);
-	ColorMap->UploadSubRegion(Color, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::RGB, ion::Graphics::EScalarType::Float);
-	NormalMap->UploadSubRegion(Normal, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::RGB, ion::Graphics::EScalarType::Float);
+	HeightMap->UploadSubRegion(HeightData, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::R, ion::Graphics::EScalarType::Float);
+	ColorMap->UploadSubRegion(ColorData, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::RGB, ion::Graphics::EScalarType::Float);
+	NormalMap->UploadSubRegion(NormalData, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::RGB, ion::Graphics::EScalarType::Float);
 
-	delete [] Data;
-	delete [] Color;
-	delete [] Normal;
+	delete [] HeightData;
+	delete [] ColorData;
+	delete [] NormalData;
 
 	if (Succeeded)
 		return (x2 - x1) * (y2 - y1);
