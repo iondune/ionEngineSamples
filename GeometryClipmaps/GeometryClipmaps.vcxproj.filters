@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="CApplication.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="CGeometryClipmapsSceneObject.cpp" />
+    <ClCompile Include="CToroidalUpdater.cpp" />
+    <ClCompile Include="CGeometryClipmapsSceneObject.SLayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CApplication.h" />
+    <ClInclude Include="CGeometryClipmapsSceneObject.h" />
+    <ClInclude Include="CToroidalUpdater.h" />
+  </ItemGroup>
+</Project>
