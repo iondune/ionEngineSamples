@@ -49,13 +49,13 @@ void CApplication::OnEvent(IEvent & Event)
 
 void CApplication::InitializeEngine()
 {
-	WindowManager->Init();
-	TimeManager->Init();
+	GraphicsAPI->Init(new COpenGLImplementation());
+	WindowManager->Init(GraphicsAPI);
+	TimeManager->Init(WindowManager);
 
 	Window = WindowManager->CreateWindow(vec2i(1600, 900), "Load OBJ", EWindowType::Windowed);
 	Window->AddChild(this);
 
-	GraphicsAPI = new COpenGLAPI();
 	GraphicsContext = GraphicsAPI->GetWindowContext(Window);
 
 	SceneManager->Init(GraphicsAPI);
@@ -91,7 +91,7 @@ void CApplication::LoadAssets()
 
 void CApplication::SetupScene()
 {
-	RenderPass = new CRenderPass(GraphicsAPI, GraphicsContext);
+	RenderPass = new CRenderPass(GraphicsContext);
 	RenderPass->SetRenderTarget(RenderTarget);
 	SceneManager->AddRenderPass(RenderPass);
 
@@ -141,7 +141,7 @@ void CApplication::AddSceneObjects()
 
 void CApplication::MainLoop()
 {
-	TimeManager->Init();
+	TimeManager->Start();
 	while (WindowManager->Run())
 	{
 		TimeManager->Update();

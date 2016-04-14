@@ -12,13 +12,13 @@ public:
 	void Run();
 	void OnEvent(IEvent & Event);
 
-	SingletonPointer<CWindowManager> WindowManager;
-	SingletonPointer<CTimeManager> TimeManager;
-	SingletonPointer<ion::Scene::CSceneManager> SceneManager;
+	SingletonPointer<ion::CWindowManager> WindowManager;
+	SingletonPointer<ion::CTimeManager> TimeManager;
+	SingletonPointer<ion::CSceneManager> SceneManager;
 	SingletonPointer<ion::CAssetManager> AssetManager;
+	SingletonPointer<ion::CGraphicsAPI> GraphicsAPI;
 
-	CWindow * Window = nullptr;
-	ion::Graphics::IGraphicsAPI * GraphicsAPI = nullptr;
+	ion::CWindow * Window = nullptr;
 	SharedPointer<ion::Graphics::IGraphicsContext> GraphicsContext;
 	ion::Scene::CRenderPass * RenderPass = nullptr;
 

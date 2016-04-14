@@ -145,12 +145,13 @@ int main()
 	SingletonPointer<CWindowManager> WindowManager;
 	SingletonPointer<CTimeManager> TimeManager;
 	SingletonPointer<CSceneManager> SceneManager;
+	SingletonPointer<CGraphicsAPI> GraphicsAPI;
 
-	WindowManager->Init();
-	TimeManager->Init();
+	GraphicsAPI->Init(new COpenGLImplementation());
+	WindowManager->Init(GraphicsAPI);
+	TimeManager->Init(WindowManager);
 	CWindow * Window = WindowManager->CreateWindow(vec2i(1600, 900), "Line Rendering", EWindowType::Windowed);
 
-	IGraphicsAPI * GraphicsAPI = new COpenGLAPI();
 	SceneManager->Init(GraphicsAPI);
 
 	SharedPointer<IGraphicsContext> Context = GraphicsAPI->GetWindowContext(Window);
@@ -180,7 +181,7 @@ int main()
 	// ionScene Setup //
 	////////////////////
 
-	CRenderPass * RenderPass = new CRenderPass(GraphicsAPI, Context);
+	CRenderPass * RenderPass = new CRenderPass(Context);
 	RenderPass->SetRenderTarget(RenderTarget);
 	SceneManager->AddRenderPass(RenderPass);
 
