@@ -91,56 +91,10 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 
 	if (UseCameraPosition)
 	{
-		// This constant specifies how far the camera should move in any given direction
-		// before we yank the camera back towards the origin and apply a global offset to
-		// the terrain in the same direction.
-		// 
-		// E.g. if the camera moves too far in the positive X direction, we pull it back
-		// a certain distance and then move the entire terrain back in the same distance.
-		// This creates the illusion of moving across the terrain while keeping the camera
-		// coordinates (at least X and Z) relatively small.
-		//
-		// If we don't do this, if we try to explore terrain far away from the origin,
-		// lack of precision in the floating point coordinates of the camera make it
-		// difficult to move slowly and cause graphical glitches.
-		//
-		// The value here is entirely arbitrary. In theory it could be as small as one,
-		// causing a global offset change ever unit of movement. It could also be
-		// extraordinarily large, though if it's too large we'll get the above precision
-		// issues at the threshold anyway.
-		static int const UpdateRegion = 100;
-
-		vec3f CameraPosition = ActiveCamera->GetPosition();
-		
-		//for (int i = 0; i < 3; i += 2) // X=0, then Z=2
-		//{
-		//	while (CameraPosition[i] >= UpdateRegion)
-		//	{
-		//		CameraPosition[i] -= UpdateRegion;
-		//		GlobalSystemOffset[i / 2] += UpdateRegion;
-		//	}
-		//	while (CameraPosition[i] < 0)
-		//	{
-		//		CameraPosition[i] += UpdateRegion;
-		//		GlobalSystemOffset[i / 2] -= UpdateRegion;
-		//	}
-		//}
-
-		ActiveCamera->SetPosition(CameraPosition);
-		ActiveCameraPosition = ActiveCamera->GetPosition();
+		ActiveCameraPosition = vec2i(
+			(int) std::floor(ActiveCamera->GetPosition().X),
+			(int) std::floor(ActiveCamera->GetPosition().Z));
 	}
-	
-	if (DoCameraUpdate)
-	{
-		// Only if we are tracking camera position:
-		//
-		// Add the global offset to the active camera position (this is where the
-		// camera would be if we weren't adjusting above).
-		ActiveCameraPositionAfterGlobalOffset = vec2i(
-			(int) std::floor(ActiveCameraPosition.X) + GlobalSystemOffset.X,
-			(int) std::floor(ActiveCameraPosition.Z) + GlobalSystemOffset.Y);
-	}
-
 
 	///////////////////////////////////////////////////////////
 	// Initial Pass - Calculate regions and generate samples //
@@ -164,7 +118,7 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 		SLayer * Layer = Layers[i];
 
 		// Figure out how far we need to move the active region
-		vec2i const DesiredActiveRegion = Layer->GetDesiredActiveRegion(ActiveCameraPositionAfterGlobalOffset);
+		vec2i const DesiredActiveRegion = Layer->GetDesiredActiveRegion(ActiveCameraPosition);
 		vec2i const DataOffsetMove = DesiredActiveRegion - Layer->ActiveRegion.Position;
 
 		if (DataOffsetMove.X == 0 && DataOffsetMove.Y == 0)
@@ -335,9 +289,9 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 		Layer->uDataOffset = Layer->DataOffset + 1;
 		
 		vec3f const Translation = vec3f(
-			(float) (Layer->ActiveRegion.Position.X * Layer->ScaleFactor - GlobalSystemOffset.X),
+			(float) (Layer->ActiveRegion.Position.X * Layer->ScaleFactor),
 			0.f,
-			(float) (Layer->ActiveRegion.Position.Y * Layer->ScaleFactor - GlobalSystemOffset.Y));
+			(float) (Layer->ActiveRegion.Position.Y * Layer->ScaleFactor));
 
 		vec3f const Scale = vec3f(
 			(float) Layer->ScaleFactor,

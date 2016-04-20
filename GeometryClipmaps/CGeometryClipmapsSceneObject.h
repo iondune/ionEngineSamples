@@ -29,8 +29,6 @@ public:
 
 	int DrawLevel = 0;
 
-	bool DoCameraUpdate = true;
-
 	CGeometryClipmapsSceneObject();
 
 	virtual void Load(ion::Scene::CRenderPass * RenderPass);
@@ -40,9 +38,6 @@ public:
 	ion::Graphics::CUniform<int> uDebugDisplay = 0;
 	bool UseCameraPosition = false;
 	bool UseCameraHeight = false;
-
-	vec2i GlobalSystemOffset;
-	vec2i ActiveCameraPositionAfterGlobalOffset;
 
 	SharedPointer<ion::Graphics::IShaderProgram> Shader;
 
@@ -107,6 +102,6 @@ protected:
 
 	bool Wireframe = false;
 
-	vec3f ActiveCameraPosition;
+	vec2i ActiveCameraPosition;
 
 };
