@@ -2,6 +2,9 @@
 
 in ivec2 vPosition;
 
+uniform vec3 uTranslation;
+uniform vec3 uScale;
+
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
@@ -20,12 +23,7 @@ void main()
 	fTexCoords = vec2(TexCoords) / vec2(TextureSize);
 
 	float Height = texelFetch(uHeightMap, TexCoords % TextureSize, 0).r;
-	vec4 WorldPosition = uModelMatrix * vec4(vPosition.x, Height, vPosition.y, 1);
-
-	//const float Radius = 16769.0 * 8.0;
-	//float Angle = length(WorldPosition.xz) / Radius;
-	//WorldPosition.y = (Radius + WorldPosition.y) * cos(Angle) - Radius;
-	//WorldPosition.xz = cos(Angle) * WorldPosition.xz;
+	vec4 WorldPosition = uModelMatrix * vec4(vec3(vPosition.x, Height, vPosition.y) * uScale + uTranslation, 1.0);
 
 	gl_Position = uProjectionMatrix * uViewMatrix * WorldPosition;
 }

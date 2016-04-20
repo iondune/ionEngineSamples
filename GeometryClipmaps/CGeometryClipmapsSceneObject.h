@@ -60,8 +60,6 @@ public:
 		bool Active = true, DataUpdated = true;
 		bool Visible = true;
 
-		STransformation3 Transformation;
-
 		rect2i ActiveRegion;
 		
 		// Offset of data "origin" within texture
@@ -69,7 +67,8 @@ public:
 		CToroidalUpdater Updater;
 
 		// Uniforms sent to shader
-		ion::Graphics::CUniform<glm::mat4> uTransformation;
+		ion::Graphics::CUniform<vec3f> uScale;
+		ion::Graphics::CUniform<vec3f> uTranslation;
 		ion::Graphics::CUniform<vec2i> uDataOffset;
 		ion::Graphics::CUniform<int> uScaleFactor;
 

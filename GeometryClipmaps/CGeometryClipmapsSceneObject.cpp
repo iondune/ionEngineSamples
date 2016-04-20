@@ -55,10 +55,12 @@ void CGeometryClipmapsSceneObject::Load(ion::Scene::CRenderPass * RenderPass)
 		PipelineState->SetVertexBuffer(0, VertexBuffer);
 
 		PipelineState->SetUniform("uHeightmapResolution", uHeightmapResolution);
-		PipelineState->SetUniform("uModelMatrix", Layer->uTransformation);
 		PipelineState->SetUniform("uDataOffset", Layer->uDataOffset);
 		PipelineState->SetUniform("uSamplingMode", uSamplingMode);
 		PipelineState->SetUniform("uDebugDisplay", uDebugDisplay);
+
+		PipelineState->SetUniform("uScale", Layer->uScale);
+		PipelineState->SetUniform("uTranslation", Layer->uTranslation);
 
 		//PipelineState->SetUniform("uScaleFactor", Layer->uScaleFactor);
 		//PipelineState->SetUniform("uTexelSize", uTexelSize);
@@ -91,9 +93,11 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 
 	if (UseCameraPosition)
 	{
+		vec3f TransformedPosition = ActiveCamera->GetPosition();
+		TransformedPosition.Transform(glm::inverse(Transformation.Get()), 1.f);
 		ActiveCameraPosition = vec2i(
-			(int) std::floor(ActiveCamera->GetPosition().X),
-			(int) std::floor(ActiveCamera->GetPosition().Z));
+			(int) std::floor(TransformedPosition.X),
+			(int) std::floor(TransformedPosition.Z));
 	}
 
 	///////////////////////////////////////////////////////////
@@ -288,19 +292,16 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 
 		Layer->uDataOffset = Layer->DataOffset + 1;
 		
-		vec3f const Translation = vec3f(
+		Layer->uTranslation = vec3f(
 			(float) (Layer->ActiveRegion.Position.X * Layer->ScaleFactor),
 			0.f,
 			(float) (Layer->ActiveRegion.Position.Y * Layer->ScaleFactor));
 
-		vec3f const Scale = vec3f(
+		Layer->uScale = vec3f(
 			(float) Layer->ScaleFactor,
 			1,
 			(float) Layer->ScaleFactor);
 
-		Layer->Transformation.SetTranslation(Translation);
-		Layer->Transformation.SetScale(Scale);
-		Layer->uTransformation = Layer->Transformation;
 		Layer->uScaleFactor = Layer->ScaleFactor;
 	}
 

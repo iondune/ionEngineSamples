@@ -120,6 +120,7 @@ void CApplication::AddSceneObjects()
 	GeometryClipmapsObject->uSamplingMode = 2;
 	GeometryClipmapsObject->UseCameraPosition = true;
 	GeometryClipmapsObject->HeightInput = new SimpleHeight();
+	GeometryClipmapsObject->SetRotation(vec3f(3.1415f / 2, 0, 0));
 	RenderPass->AddSceneObject(GeometryClipmapsObject);
 
 	CDirectionalLight * Light = new CDirectionalLight();
