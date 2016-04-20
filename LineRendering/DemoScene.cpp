@@ -1,5 +1,6 @@
 
 #include <ionEngine.h>
+#include "California.h"
 
 using namespace ion;
 using namespace ion::Scene;
@@ -211,21 +212,21 @@ int main()
 
 	CSimpleMeshSceneObject * SceneObject4 = new CSimpleMeshSceneObject();
 	SceneObject4->SetShader(ShaderProgram);
-	SceneObject4->SetFeatureEnabled(EDrawFeature::Wireframe, true);
+	//SceneObject4->SetFeatureEnabled(EDrawFeature::Wireframe, true);
 	RenderPass->AddSceneObject(SceneObject4);
 
 	srand(1234);
 	vector<vec2f> Points;
-	Points.push_back(vec2f(0, 0));
-	Points.push_back(vec2f(0, 2));
-	Points.push_back(vec2f(1, 3));
-	Points.push_back(vec2f(2, 2));
-	Points.push_back(vec2f(3, 1));
-	Points.push_back(vec2f(2, 0));
+	//Points.push_back(vec2f(0, 0));
+	//Points.push_back(vec2f(0, 2));
+	//Points.push_back(vec2f(1, 3));
+	//Points.push_back(vec2f(2, 2));
+	//Points.push_back(vec2f(3, 1));
+	//Points.push_back(vec2f(2, 0));
 
-	for (uint i = 0; i < 12; ++ i)
+	for (uint i = 0; i < ION_ARRAYSIZE(California); ++ i)
 	{
-		//Points.push_back(Points.back() + vec2f(nrand()*(frand() + 1), nrand()*(frand() + 1)));
+		Points.push_back(California[i].XY() - vec2f(-117, 33));
 	}
 
 	SceneObject4->SetMesh(CreatePolygonMesh(Points));

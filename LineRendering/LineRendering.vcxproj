@@ -20,5 +20,8 @@
   <ItemGroup>
     <ClCompile Include="DemoScene.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="California.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
