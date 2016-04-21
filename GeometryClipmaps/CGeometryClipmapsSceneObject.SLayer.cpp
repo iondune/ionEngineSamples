@@ -46,7 +46,6 @@ CGeometryClipmapsSceneObject::SLayer::SLayer(CGeometryClipmapsSceneObject * Owne
 
 	// Default Data Upload
 	SendSample(0, 0, HeightmapResolution, HeightmapResolution, ClipPos, vec2i(0, 0));
-	DataUpdated = true;
 
 	IndexBuffer = RenderPass->GetGraphicsAPI()->CreateIndexBuffer();
 	PipelineState = RenderPass->GetGraphicsContext()->CreatePipelineState();

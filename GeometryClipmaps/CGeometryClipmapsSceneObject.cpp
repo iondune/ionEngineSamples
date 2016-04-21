@@ -6,15 +6,7 @@ using namespace ion;
 using namespace Scene;
 
 CGeometryClipmapsSceneObject::CGeometryClipmapsSceneObject()
-{
-	// Since we are sampling a heightmap texture we need to know the texel size
-	// If we used texelFetch in the vertex shader instead we would not need to know
-	// this necessarily. But that's also assuming we don't want to do any sort of
-	// bicubic interpolation. An optimized version of bicubic interpolation would use
-	// the built in interpolation engine and not just fetch singular texels.
-	uTexelSize = 1.f / HeightmapResolution;
-	uHeightmapResolution = (float) HeightmapResolution;
-}
+{}
 
 void CGeometryClipmapsSceneObject::Load(ion::Scene::CRenderPass * RenderPass)
 {
@@ -54,16 +46,11 @@ void CGeometryClipmapsSceneObject::Load(ion::Scene::CRenderPass * RenderPass)
 
 		PipelineState->SetVertexBuffer(0, VertexBuffer);
 
-		PipelineState->SetUniform("uHeightmapResolution", uHeightmapResolution);
 		PipelineState->SetUniform("uDataOffset", Layer->uDataOffset);
-		PipelineState->SetUniform("uSamplingMode", uSamplingMode);
 		PipelineState->SetUniform("uDebugDisplay", uDebugDisplay);
 
 		PipelineState->SetUniform("uScale", Layer->uScale);
 		PipelineState->SetUniform("uTranslation", Layer->uTranslation);
-
-		//PipelineState->SetUniform("uScaleFactor", Layer->uScaleFactor);
-		//PipelineState->SetUniform("uTexelSize", uTexelSize);
 
 		PipelineState->SetTexture("uHeightMap", Layer->HeightMap);
 		PipelineState->SetTexture("uColorMap", Layer->ColorMap);
@@ -103,19 +90,7 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 	///////////////////////////////////////////////////////////
 	// Initial Pass - Calculate regions and generate samples //
 	///////////////////////////////////////////////////////////
-
-	// The budget is the number of texels of heightmap data we can load before we
-	// quit and start disabiling layers instead of loading the data they need to
-	// be visible.
-	//
-	// This is a heuristic - if we have a remaining budget of `1` and an update
-	// would take `1000` texels, we still do the update.
-	//static int const StartingBudget = 1;
-	//int Budget = StartingBudget;
-
-	for (auto it = Layers.begin(); it != Layers.end(); ++ it)
-		(* it)->DataUpdated = false;
-
+	
 	for (int i = LayerCount - 1; i >= 0; -- i)
 	{
 		// We start at the largest/coarsest/farthest layer and move in/downwards
@@ -125,15 +100,10 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 		vec2i const DesiredActiveRegion = Layer->GetDesiredActiveRegion(ActiveCameraPosition);
 		vec2i const DataOffsetMove = DesiredActiveRegion - Layer->ActiveRegion.Position;
 
-		if (DataOffsetMove.X == 0 && DataOffsetMove.Y == 0)
-		{
-			Layer->DataUpdated = true;
-		}
-		else //if (Budget > 0)
+		if (DataOffsetMove.X != 0 || DataOffsetMove.Y != 0)
 		{
 			Layer->SetActiveRegion(DesiredActiveRegion);
-			/*Budget -= */Layer->GenerateAndUploadNewData(DataOffsetMove);
-			Layer->DataUpdated = true;
+			Layer->GenerateAndUploadNewData(DataOffsetMove);
 		}
 	}
 
@@ -151,9 +121,6 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 		if (! Layer->Active)
 			continue;
 
-		if (! Layer->DataUpdated)
-			continue;
-
 		if (Layer->Level < DrawLevel)
 			continue;
 		
@@ -164,7 +131,7 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 		if (Layer->Level > 0)
 		{
 			NextLevelDown = *(it - 1);
-			if (NextLevelDown->Active && NextLevelDown->DataUpdated)
+			if (NextLevelDown->Active)
 			{
 				NextLevelActiveRegion = ((* (it - 1))->ActiveRegion);
 				NextLevelActiveRegion.Position /= 2;
@@ -183,7 +150,7 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 			for (int y = Layer->ActiveRegion.Position.Y; y < Layer->ActiveRegion.OtherCorner().Y; ++ y)
 			{
 				// Check if next level down is active here - if so, skip triangles
-				if (Layer->Level && (* (it - 1))->Active && (* (it - 1))->DataUpdated)
+				if (Layer->Level && (* (it - 1))->Active)
 				{
 					bool const IsInOtherActiveRegion =
 						x >= NextLevelActiveRegion.Position.X &&
@@ -301,8 +268,6 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 			(float) Layer->ScaleFactor,
 			1,
 			(float) Layer->ScaleFactor);
-
-		Layer->uScaleFactor = Layer->ScaleFactor;
 	}
 
 	for (auto Layer : Layers)

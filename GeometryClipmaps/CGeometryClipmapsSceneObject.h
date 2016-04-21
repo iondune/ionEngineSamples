@@ -34,7 +34,6 @@ public:
 	virtual void Load(ion::Scene::CRenderPass * RenderPass);
 	virtual void Draw(ion::Scene::CRenderPass * RenderPass);
 
-	ion::Graphics::CUniform<int> uSamplingMode = 0;
 	ion::Graphics::CUniform<int> uDebugDisplay = 0;
 	bool UseCameraPosition = false;
 	bool UseCameraHeight = false;
@@ -57,7 +56,7 @@ public:
 		SharedPointer<ion::Graphics::IPipelineState> PipelineState;
 
 		int Level, ScaleFactor;
-		bool Active = true, DataUpdated = true;
+		bool Active = true;
 		bool Visible = true;
 
 		rect2i ActiveRegion;
@@ -70,7 +69,6 @@ public:
 		ion::Graphics::CUniform<vec3f> uScale;
 		ion::Graphics::CUniform<vec3f> uTranslation;
 		ion::Graphics::CUniform<vec2i> uDataOffset;
-		ion::Graphics::CUniform<int> uScaleFactor;
 
 		SLayer(CGeometryClipmapsSceneObject * Owner, int const i, ion::Scene::CRenderPass * RenderPass);
 
@@ -94,9 +92,7 @@ public:
 
 protected:
 
-	ion::Graphics::CUniform<float> uTexelSize;
-	ion::Graphics::CUniform<float> uHeightmapResolution;
-
+	// Shared vertex buffer for each later
 	SharedPointer<ion::Graphics::IVertexBuffer> VertexBuffer = nullptr;
 
 	bool Wireframe = false;

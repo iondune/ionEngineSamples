@@ -117,7 +117,6 @@ void CApplication::AddSceneObjects()
 	GeometryClipmapsObject = new CGeometryClipmapsSceneObject();
 	GeometryClipmapsObject->SetWireframeEnabled(true);
 	GeometryClipmapsObject->Shader = GeometryClipmapsShader;
-	GeometryClipmapsObject->uSamplingMode = 2;
 	GeometryClipmapsObject->UseCameraPosition = true;
 	GeometryClipmapsObject->HeightInput = new SimpleHeight();
 	GeometryClipmapsObject->SetRotation(vec3f(3.1415f / 2, 0, 0));
