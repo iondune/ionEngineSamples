@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoadOBJ", "LoadOBJ\LoadOBJ.vcxproj", "{C324FD79-1039-4A24-985B-68BD054876E2}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Billboards", "Billboards\Billboards.vcxproj", "{C42AAB8A-51C3-4F9D-A854-B06A9E0BC7ED}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeometryClipmaps", "GeometryClipmaps\GeometryClipmaps.vcxproj", "{A167B943-9CF8-4BA9-841A-ED8B2CF5A66A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FrameBuffers", "FrameBuffers\FrameBuffers.vcxproj", "{BD0E6116-73CE-4F81-94E8-3B82FEB323AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{A167B943-9CF8-4BA9-841A-ED8B2CF5A66A}.Debug|x64.Build.0 = Debug|x64
 		{A167B943-9CF8-4BA9-841A-ED8B2CF5A66A}.Release|x64.ActiveCfg = Release|x64
 		{A167B943-9CF8-4BA9-841A-ED8B2CF5A66A}.Release|x64.Build.0 = Release|x64
+		{BD0E6116-73CE-4F81-94E8-3B82FEB323AE}.Debug|x64.ActiveCfg = Debug|x64
+		{BD0E6116-73CE-4F81-94E8-3B82FEB323AE}.Debug|x64.Build.0 = Debug|x64
+		{BD0E6116-73CE-4F81-94E8-3B82FEB323AE}.Release|x64.ActiveCfg = Release|x64
+		{BD0E6116-73CE-4F81-94E8-3B82FEB323AE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
