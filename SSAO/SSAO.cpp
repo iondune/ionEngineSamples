@@ -57,11 +57,11 @@ int main()
 	SceneColor->SetMinFilter(ITexture::EFilter::Nearest);
 	SceneColor->SetMagFilter(ITexture::EFilter::Nearest);
 	SceneColor->SetWrapMode(ITexture::EWrapMode::Clamp);
-	SharedPointer<ITexture2D> ScenePosition = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Float32);
+	SharedPointer<ITexture2D> ScenePosition = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Float16);
 	ScenePosition->SetMinFilter(ITexture::EFilter::Nearest);
 	ScenePosition->SetMagFilter(ITexture::EFilter::Nearest);
 	ScenePosition->SetWrapMode(ITexture::EWrapMode::Clamp);
-	SharedPointer<ITexture2D> SceneNormal = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float32);
+	SharedPointer<ITexture2D> SceneNormal = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float16);
 	SceneNormal->SetMinFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetMagFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetWrapMode(ITexture::EWrapMode::Clamp);
@@ -114,7 +114,7 @@ int main()
 		NoiseData.push_back(randomFloats(generator) * 2 - 1);
 		NoiseData.push_back(0.0);
 	}
-	SharedPointer<ITexture2D> SSAONoise = GraphicsAPI->CreateTexture2D(vec2u(NoiseTexSize), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float32);
+	SharedPointer<ITexture2D> SSAONoise = GraphicsAPI->CreateTexture2D(vec2u(NoiseTexSize), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float16);
 	SSAONoise->Upload(NoiseData.data(), vec2u(NoiseTexSize), ITexture::EFormatComponents::RGB, EScalarType::Float);
 	SSAONoise->SetMinFilter(ITexture::EFilter::Nearest);
 	SSAONoise->SetMagFilter(ITexture::EFilter::Nearest);
