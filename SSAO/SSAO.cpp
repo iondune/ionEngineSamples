@@ -4,6 +4,7 @@
 #include <ionGraphicsGL.h>
 #include <ionScene.h>
 #include <ionApplication.h>
+#include <ionGUI.h>
 
 #include <random>
 
@@ -30,6 +31,7 @@ int main()
 	SingletonPointer<CTimeManager> TimeManager;
 	SingletonPointer<CSceneManager> SceneManager;
 	SingletonPointer<CAssetManager> AssetManager;
+	SingletonPointer<CGUIManager> GUIManager;
 
 	GraphicsAPI->Init(new Graphics::COpenGLImplementation());
 	WindowManager->Init(GraphicsAPI);
@@ -38,6 +40,8 @@ int main()
 	AssetManager->Init(GraphicsAPI);
 
 	CWindow * Window = WindowManager->CreateWindow(vec2i(1600, 900), "DemoApplication", EWindowType::Windowed);
+
+	GUIManager->Init(Window);
 
 	AssetManager->SetAssetPath("Assets/");
 	AssetManager->SetShaderPath("Shaders/");
@@ -178,10 +182,16 @@ int main()
 	Sphere4->GetMaterial().Diffuse *= color3f(0.9f, 1, 1);
 	RenderPass->AddSceneObject(Sphere4);
 
+	//vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("terrain.obj");
+	//for (auto Mesh : Meshes)
+	//{
 	CSimpleMeshSceneObject * PlaneObject = new CSimpleMeshSceneObject();
 	PlaneObject->SetMesh(PlaneMesh);
 	PlaneObject->SetShader(GeometryShader);
 	RenderPass->AddSceneObject(PlaneObject);
+	//}
+
+	float SSAORadius = 1.0f;
 
 	CSimpleMeshSceneObject * PostProcessObject = new CSimpleMeshSceneObject();
 	PostProcessObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
@@ -193,6 +203,7 @@ int main()
 	PostProcessObject->SetUniform("uTanHalfFOV", CUniform<float>(Tan(Camera->GetFieldOfView() / 2.f)));
 	PostProcessObject->SetUniform("uAspectRatio", CUniform<float>(Window->GetAspectRatio()));
 	PostProcessObject->SetUniform("samples[0]", CUniform<vector<vec3f>>(ssaoKernel));
+	PostProcessObject->SetUniform("radius", std::make_shared<CUniformReference<float>>(&SSAORadius));
 	PostProcess->AddSceneObject(PostProcessObject);
 
 	CPointLight * Light1 = new CPointLight();
@@ -209,9 +220,25 @@ int main()
 	{
 		TimeManager->Update();
 
+		GUIManager->NewFrame();
+		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_Once);
+		if (ImGui::Begin("Settings"))
+		{
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::Text("Camera position: %.3f %.3f %.3f", Camera->GetPosition().X, Camera->GetPosition().Y, Camera->GetPosition().Z);
+			ImGui::Text("Camera rotation: %.3f %.3f", Controller->GetTheta(), Controller->GetPhi());
+
+			ImGui::Separator();
+
+			ImGui::SliderFloat("SSAO Radius", &SSAORadius, 0.1f, 20.f);
+
+			ImGui::End();
+		}
+
 		FrameBuffer->ClearColorAndDepth();
 		BackBuffer->ClearColorAndDepth();
 		SceneManager->DrawAll();
+		GUIManager->Draw();
 		Window->SwapBuffers();
 	}
 
