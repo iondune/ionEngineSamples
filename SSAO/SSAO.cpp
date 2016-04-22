@@ -5,10 +5,17 @@
 #include <ionScene.h>
 #include <ionApplication.h>
 
+#include <random>
+
 using namespace ion;
 using namespace ion::Scene;
 using namespace ion::Graphics;
 
+
+float lerp(float const a, float const b, float const f)
+{
+	return a + f * (b - a);
+}
 
 int main()
 {
@@ -42,15 +49,18 @@ int main()
 
 	SharedPointer<IFrameBuffer> FrameBuffer = Context->CreateFrameBuffer();
 
-	SharedPointer<ITexture2D> SceneTexture = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Fix8);
-	SharedPointer<ITexture2D> SceneDepth = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::R, ITexture::EInternalFormatType::Depth);
-	FrameBuffer->AttachColorTexture(SceneTexture, 0);
-	FrameBuffer->AttachDepthTexture(SceneDepth);
+	SharedPointer<ITexture2D> SceneColor = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Fix8);
+	SharedPointer<ITexture2D> ScenePosition = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Float32);
+	SharedPointer<ITexture2D> SceneNormal = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float32);
+	SharedPointer<IDepthBuffer> SceneDepth = GraphicsAPI->CreateDepthBuffer(Window->GetSize());
+	FrameBuffer->AttachColorTexture(SceneColor, 0);
+	FrameBuffer->AttachColorTexture(ScenePosition, 1);
+	FrameBuffer->AttachColorTexture(SceneNormal, 2);
+	FrameBuffer->AttachDepthBuffer(SceneDepth);
 	if (! FrameBuffer->CheckCorrectness())
 	{
 		Log::Error("Frame buffer not valid!");
 	}
-
 
 	/////////////////
 	// Load Assets //
@@ -59,8 +69,40 @@ int main()
 	CSimpleMesh * SphereMesh = CGeometryCreator::CreateSphere();
 	CSimpleMesh * PlaneMesh = CGeometryCreator::CreatePlane(vec2f(100.f));
 
-	SharedPointer<IShaderProgram> DiffuseShader = AssetManager->LoadShader("Diffuse");
+	SharedPointer<IShaderProgram> GeometryShader = AssetManager->LoadShader("Geometry");
+	SharedPointer<IShaderProgram> SSAOShader = AssetManager->LoadShader("SSAO");
 	SharedPointer<IShaderProgram> QuadCopyShader = AssetManager->LoadShader("QuadCopy");
+
+
+	std::uniform_real_distribution<float> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
+	std::default_random_engine generator;
+
+	// Sample kernel
+	std::vector<vec3f> ssaoKernel;
+	for (uint i = 0; i < 64; ++i)
+	{
+		vec3f sample(randomFloats(generator) * 2 - 1, randomFloats(generator) * 2 - 1, randomFloats(generator));
+		sample.Normalize();
+		sample *= randomFloats(generator);
+		float scale = float(i) / 64.f;
+
+		// Scale samples s.t. they're more aligned to center of kernel
+		scale = lerp(0.1f, 1.0f, scale * scale);
+		sample *= scale;
+		ssaoKernel.push_back(sample);
+	}
+
+	// Noise texture
+	std::vector<float> NoiseData;
+	uint const NoiseTexSize = 128;
+	for (uint i = 0; i < NoiseTexSize * NoiseTexSize; i++)
+	{
+		NoiseData.push_back(randomFloats(generator) * 2 - 1);
+		NoiseData.push_back(randomFloats(generator) * 2 - 1);
+		NoiseData.push_back(0.0);
+	}
+	SharedPointer<ITexture2D> SSAONoise = GraphicsAPI->CreateTexture2D(vec2u(NoiseTexSize), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float32);
+	SSAONoise->Upload(NoiseData.data(), vec2u(NoiseTexSize), ITexture::EFormatComponents::RGB, EScalarType::Float);
 
 
 	////////////////////
@@ -78,7 +120,10 @@ int main()
 	CPerspectiveCamera * Camera = new CPerspectiveCamera(Window->GetAspectRatio());
 	Camera->SetPosition(vec3f(0, 3, -5));
 	Camera->SetFocalLength(0.4f);
+	Camera->SetNearPlane(0.1f);
+	Camera->SetFarPlane(50.f);
 	RenderPass->SetActiveCamera(Camera);
+	PostProcess->SetActiveCamera(Camera);
 
 	CCameraController * Controller = new CCameraController(Camera);
 	Controller->SetTheta(15.f * Constants32::Pi / 48.f);
@@ -91,42 +136,52 @@ int main()
 	// Add Objects //
 	/////////////////
 
-	CSimpleMeshSceneObject * LightSphere1 = new CSimpleMeshSceneObject();
-	LightSphere1->SetMesh(SphereMesh);
-	LightSphere1->SetShader(DiffuseShader);
-	LightSphere1->SetPosition(vec3f(0, 0, 0));
-	LightSphere1->SetScale(2.f);
-	RenderPass->AddSceneObject(LightSphere1);
+	CSimpleMeshSceneObject * Sphere1 = new CSimpleMeshSceneObject();
+	Sphere1->SetMesh(SphereMesh);
+	Sphere1->SetShader(GeometryShader);
+	Sphere1->SetPosition(vec3f(0, 0, 0));
+	Sphere1->SetScale(2.f);
+	Sphere1->GetMaterial().Diffuse *= color3f(1.0, 0.8f, 0.8f);
+	RenderPass->AddSceneObject(Sphere1);
 
-	CSimpleMeshSceneObject * LightSphere2 = new CSimpleMeshSceneObject();
-	LightSphere2->SetMesh(SphereMesh);
-	LightSphere2->SetShader(DiffuseShader);
-	LightSphere2->SetPosition(vec3f(4, 0, 0));
-	LightSphere2->SetScale(3.f);
-	RenderPass->AddSceneObject(LightSphere2);
+	CSimpleMeshSceneObject * Sphere2 = new CSimpleMeshSceneObject();
+	Sphere2->SetMesh(SphereMesh);
+	Sphere2->SetShader(GeometryShader);
+	Sphere2->SetPosition(vec3f(4, 0, 0));
+	Sphere2->SetScale(3.f);
+	Sphere2->GetMaterial().Diffuse *= color3f(0.8f, 1, 0.8f);
+	RenderPass->AddSceneObject(Sphere2);
 
-	CSimpleMeshSceneObject * LightSphere3 = new CSimpleMeshSceneObject();
-	LightSphere3->SetMesh(SphereMesh);
-	LightSphere3->SetShader(DiffuseShader);
-	LightSphere3->SetPosition(vec3f(12, 0, 0));
-	LightSphere3->SetScale(4.f);
-	RenderPass->AddSceneObject(LightSphere3);
+	CSimpleMeshSceneObject * Sphere3 = new CSimpleMeshSceneObject();
+	Sphere3->SetMesh(SphereMesh);
+	Sphere3->SetShader(GeometryShader);
+	Sphere3->SetPosition(vec3f(12, 0, 0));
+	Sphere3->SetScale(4.f);
+	Sphere3->GetMaterial().Diffuse *= color3f(0.8f, 0.9f, 1);
+	RenderPass->AddSceneObject(Sphere3);
 
-	CSimpleMeshSceneObject * SpecularSphere = new CSimpleMeshSceneObject();
-	SpecularSphere->SetMesh(SphereMesh);
-	SpecularSphere->SetShader(DiffuseShader);
-	SpecularSphere->SetPosition(vec3f(3, 0, 6));
-	RenderPass->AddSceneObject(SpecularSphere);
+	CSimpleMeshSceneObject * Sphere4 = new CSimpleMeshSceneObject();
+	Sphere4->SetMesh(SphereMesh);
+	Sphere4->SetShader(GeometryShader);
+	Sphere4->SetPosition(vec3f(3, 0, 6));
+	Sphere4->GetMaterial().Diffuse *= color3f(0.9f, 1, 1);
+	RenderPass->AddSceneObject(Sphere4);
 
 	CSimpleMeshSceneObject * PlaneObject = new CSimpleMeshSceneObject();
 	PlaneObject->SetMesh(PlaneMesh);
-	PlaneObject->SetShader(DiffuseShader);
+	PlaneObject->SetShader(GeometryShader);
 	RenderPass->AddSceneObject(PlaneObject);
 
 	CSimpleMeshSceneObject * PostProcessObject = new CSimpleMeshSceneObject();
 	PostProcessObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
-	PostProcessObject->SetShader(QuadCopyShader);
-	PostProcessObject->SetTexture("uTexture", SceneTexture);
+	PostProcessObject->SetShader(SSAOShader);
+	PostProcessObject->SetTexture("gPositionDepth", ScenePosition);
+	PostProcessObject->SetTexture("gNormal", SceneNormal);
+	PostProcessObject->SetTexture("gPositionDepth", ScenePosition);
+	PostProcessObject->SetTexture("texNoise", SSAONoise);
+	PostProcessObject->SetUniform("uTanHalfFOV", CUniform<float>(Tan(Camera->GetFieldOfView() / 2.f)));
+	PostProcessObject->SetUniform("uAspectRatio", CUniform<float>(Window->GetAspectRatio()));
+	PostProcessObject->SetUniform("samples[0]", CUniform<vector<vec3f>>(ssaoKernel));
 	PostProcess->AddSceneObject(PostProcessObject);
 
 	CPointLight * Light1 = new CPointLight();
