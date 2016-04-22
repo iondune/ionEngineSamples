@@ -60,7 +60,7 @@ void CGeometryClipmapsSceneObject::Load(ion::Scene::CRenderPass * RenderPass)
 		RenderPass->PreparePipelineStateForRendering(PipelineState, this);
 	}
 
-	Loaded = true;
+	Loaded[RenderPass] = true;
 	Log::Info("... done! (%.3f s)", StopWatch.Stop());
 }
 

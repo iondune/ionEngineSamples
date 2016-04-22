@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoadOBJ", "LoadOBJ\LoadOBJ.vcxproj", "{C324FD79-1039-4A24-985B-68BD054876E2}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FrameBuffers", "FrameBuffers\FrameBuffers.vcxproj", "{BD0E6116-73CE-4F81-94E8-3B82FEB323AE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSAO", "SSAO\SSAO.vcxproj", "{C4EE1B0B-F03D-47C7-980A-65AC4E85D2B1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShadowMaps", "ShadowMaps\ShadowMaps.vcxproj", "{024BE4B4-CD16-4E25-946F-FB70E685DA1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{C4EE1B0B-F03D-47C7-980A-65AC4E85D2B1}.Debug|x64.Build.0 = Debug|x64
 		{C4EE1B0B-F03D-47C7-980A-65AC4E85D2B1}.Release|x64.ActiveCfg = Release|x64
 		{C4EE1B0B-F03D-47C7-980A-65AC4E85D2B1}.Release|x64.Build.0 = Release|x64
+		{024BE4B4-CD16-4E25-946F-FB70E685DA1C}.Debug|x64.ActiveCfg = Debug|x64
+		{024BE4B4-CD16-4E25-946F-FB70E685DA1C}.Debug|x64.Build.0 = Debug|x64
+		{024BE4B4-CD16-4E25-946F-FB70E685DA1C}.Release|x64.ActiveCfg = Release|x64
+		{024BE4B4-CD16-4E25-946F-FB70E685DA1C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

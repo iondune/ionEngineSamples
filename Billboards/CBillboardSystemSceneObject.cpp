@@ -79,7 +79,7 @@ void CBillboardSystemSceneObject::Load(CRenderPass * RenderPass)
 	}
 
 	RenderPass->PreparePipelineStateForRendering(PipelineState, this);
-	Loaded = true;
+	Loaded[RenderPass] = true;
 }
 
 void CBillboardSystemSceneObject::Draw(CRenderPass * RenderPass)
