@@ -50,8 +50,17 @@ int main()
 	SharedPointer<IFrameBuffer> FrameBuffer = Context->CreateFrameBuffer();
 
 	SharedPointer<ITexture2D> SceneColor = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Fix8);
+	SceneColor->SetMinFilter(ITexture::EFilter::Nearest);
+	SceneColor->SetMagFilter(ITexture::EFilter::Nearest);
+	SceneColor->SetWrapMode(ITexture::EWrapMode::Clamp);
 	SharedPointer<ITexture2D> ScenePosition = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Float32);
+	ScenePosition->SetMinFilter(ITexture::EFilter::Nearest);
+	ScenePosition->SetMagFilter(ITexture::EFilter::Nearest);
+	ScenePosition->SetWrapMode(ITexture::EWrapMode::Clamp);
 	SharedPointer<ITexture2D> SceneNormal = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float32);
+	SceneNormal->SetMinFilter(ITexture::EFilter::Nearest);
+	SceneNormal->SetMagFilter(ITexture::EFilter::Nearest);
+	SceneNormal->SetWrapMode(ITexture::EWrapMode::Clamp);
 	SharedPointer<IDepthBuffer> SceneDepth = GraphicsAPI->CreateDepthBuffer(Window->GetSize());
 	FrameBuffer->AttachColorTexture(SceneColor, 0);
 	FrameBuffer->AttachColorTexture(ScenePosition, 1);
@@ -103,6 +112,8 @@ int main()
 	}
 	SharedPointer<ITexture2D> SSAONoise = GraphicsAPI->CreateTexture2D(vec2u(NoiseTexSize), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float32);
 	SSAONoise->Upload(NoiseData.data(), vec2u(NoiseTexSize), ITexture::EFormatComponents::RGB, EScalarType::Float);
+	SSAONoise->SetMinFilter(ITexture::EFilter::Nearest);
+	SSAONoise->SetMagFilter(ITexture::EFilter::Nearest);
 
 
 	////////////////////
