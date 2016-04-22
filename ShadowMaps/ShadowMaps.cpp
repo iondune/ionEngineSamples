@@ -46,8 +46,8 @@ int main()
 
 	SharedPointer<IFrameBuffer> ShadowBuffer = Context->CreateFrameBuffer();
 
-	SharedPointer<ITexture2D> ShadowTexture = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Fix8);
-	SharedPointer<ITexture2D> ShadowDepth = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::R, ITexture::EInternalFormatType::Depth);
+	SharedPointer<ITexture2D> ShadowTexture = GraphicsAPI->CreateTexture2D(vec2u(4096), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Fix8);
+	SharedPointer<ITexture2D> ShadowDepth = GraphicsAPI->CreateTexture2D(vec2u(4096), ITexture::EMipMaps::False, ITexture::EFormatComponents::R, ITexture::EInternalFormatType::Depth);
 	ShadowBuffer->AttachColorTexture(ShadowTexture, 0);
 	ShadowBuffer->AttachDepthTexture(ShadowDepth);
 	if (! ShadowBuffer->CheckCorrectness())
@@ -96,11 +96,11 @@ int main()
 	TimeManager->MakeUpdateTick(0.02)->AddListener(Controller);
 
 	vec3f LightDirection = vec3f(2, -12, 2);
-	float LightViewSize = 100.f;
+	float LightViewSize = 20.f;
 	float LightNear = 50.f;
 	float LightFar = 200.f;
 
-	CPerspectiveCamera * LightCamera = new CPerspectiveCamera(Window->GetAspectRatio());// -LightViewSize, LightViewSize, -LightViewSize, LightViewSize);
+	COrthographicCamera * LightCamera = new COrthographicCamera(-LightViewSize, LightViewSize, -LightViewSize, LightViewSize);
 	LightCamera->SetPosition(-LightDirection * 10.f);
 	LightCamera->SetLookDirection(LightDirection);
 	LightCamera->SetNearPlane(LightNear);
@@ -213,10 +213,10 @@ int main()
 			ImGui::End();
 		}
 
-		//LightCamera->SetLeft(-LightViewSize);
-		//LightCamera->SetRight(LightViewSize);
-		//LightCamera->SetBottom(-LightViewSize);
-		//LightCamera->SetTop(LightViewSize);
+		LightCamera->SetLeft(-LightViewSize);
+		LightCamera->SetRight(LightViewSize);
+		LightCamera->SetBottom(-LightViewSize);
+		LightCamera->SetTop(LightViewSize);
 		LightCamera->SetPosition(-LightDirection * 10.f);
 		LightCamera->SetLookDirection(LightDirection);
 		LightCamera->SetNearPlane(LightNear);
