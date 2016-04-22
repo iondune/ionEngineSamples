@@ -10,15 +10,15 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="ShadowMaps.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{024BE4B4-CD16-4E25-946F-FB70E685DA1C}</ProjectGuid>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>ShadowMaps</RootNamespace>
   </PropertyGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(VisualStudioDir)\Projects\ionEngine\Properties\Application.props" />
   </ImportGroup>
+  <ItemGroup>
+    <ClCompile Include="ShadowMaps.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
