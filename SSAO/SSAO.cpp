@@ -94,7 +94,7 @@ int main()
 	std::vector<vec3f> ssaoKernel;
 	for (uint i = 0; i < 64; ++i)
 	{
-		vec3f sample(randomFloats(generator) * 2 - 1, randomFloats(generator) * 2 - 1, randomFloats(generator));
+		vec3f sample(randomFloats(generator) * 2 - 1, randomFloats(generator) * 2 - 1, randomFloats(generator) * 0.9f + 0.1f);
 		sample.Normalize();
 		sample *= randomFloats(generator);
 		float scale = float(i) / 64.f;
