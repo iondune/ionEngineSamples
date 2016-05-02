@@ -182,13 +182,18 @@ int main()
 	Sphere4->GetMaterial().Diffuse *= color3f(0.9f, 1, 1);
 	RenderPass->AddSceneObject(Sphere4);
 
-	//vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("terrain.obj");
-	//for (auto Mesh : Meshes)
-	//{
 	CSimpleMeshSceneObject * PlaneObject = new CSimpleMeshSceneObject();
 	PlaneObject->SetMesh(PlaneMesh);
 	PlaneObject->SetShader(GeometryShader);
 	RenderPass->AddSceneObject(PlaneObject);
+
+	//vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("terrain.obj");
+	//for (auto Mesh : Meshes)
+	//{
+	//	CSimpleMeshSceneObject * PlaneObject = new CSimpleMeshSceneObject();
+	//	PlaneObject->SetMesh(Mesh);
+	//	PlaneObject->SetShader(GeometryShader);
+	//	RenderPass->AddSceneObject(PlaneObject);
 	//}
 
 	float SSAORadius = 1.0f;

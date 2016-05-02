@@ -167,6 +167,16 @@ int main()
 	ColorPass->AddSceneObject(Plane);
 	ShadowPass->AddSceneObject(Plane);
 
+	//vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("terrain.obj");
+	//for (auto Mesh : Meshes)
+	//{
+	//	CSimpleMeshSceneObject * PlaneObject = new CSimpleMeshSceneObject();
+	//	PlaneObject->SetMesh(Mesh);
+	//	PlaneObject->SetShader(DiffuseShader);
+	//	ColorPass->AddSceneObject(PlaneObject);
+	//	ShadowPass->AddSceneObject(PlaneObject);
+	//}
+
 	CSimpleMeshSceneObject * PostProcessObject = new CSimpleMeshSceneObject();
 	PostProcessObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
 	PostProcessObject->SetShader(QuadCopyShader);
