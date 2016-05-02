@@ -36,7 +36,7 @@ int main()
 
 	GUIManager->Init(Window);
 
-	AssetManager->SetAssetPath("Assets/");
+	AssetManager->AddAssetPath("Assets/");
 	AssetManager->SetShaderPath("Shaders/");
 	AssetManager->SetTexturePath("Images/");
 

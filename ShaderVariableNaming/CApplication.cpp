@@ -59,7 +59,7 @@ void CApplication::InitializeEngine()
 
 	SceneManager->Init(GraphicsAPI);
 	AssetManager->Init(GraphicsAPI);
-	AssetManager->SetAssetPath("Assets/");
+	AssetManager->AddAssetPath("Assets/");
 	AssetManager->SetShaderPath("Shaders/");
 	AssetManager->SetTexturePath("Textures/");
 
@@ -127,7 +127,7 @@ void CApplication::AddSceneObjects()
 		VertexBuffer->SetInputLayout(InputLayout, ION_ARRAYSIZE(InputLayout));
 
 		CSimpleSceneObject * Object = new CSimpleSceneObject();
-		Object->SetVertexBuffer(VertexBuffer);
+		Object->SetVertexBuffer(0, VertexBuffer);
 		Object->SetIndexBuffer(IndexBuffer);
 		Object->SetShader(SpecularShader);
 		Object->SetPosition(vec3f(0, 1, 0));
