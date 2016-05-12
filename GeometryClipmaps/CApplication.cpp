@@ -70,6 +70,7 @@ void CApplication::InitializeEngine()
 
 void CApplication::LoadAssets()
 {
+	AxisShader = AssetManager->LoadShader("Axis");
 	GeometryClipmapsShader = AssetManager->LoadShader("GeometryClipmaps");
 }
 
@@ -82,7 +83,8 @@ void CApplication::SetupScene()
 	FreeCamera = new CPerspectiveCamera(Window->GetAspectRatio());
 	FreeCamera->SetPosition(vec3f(0, 3, -5));
 	FreeCamera->SetFocalLength(0.4f);
-	FreeCamera->SetFarPlane(7000000.f);
+	FreeCamera->SetNearPlane(0.001f);
+	FreeCamera->SetFarPlane(10.f);
 
 	CCameraController * Controller = new CCameraController(FreeCamera);
 	Controller->SetTheta(15.f * Constants32::Pi / 48.f);
@@ -104,7 +106,7 @@ void CApplication::AddSceneObjects()
 		{
 			float const Input = (float) (Length(vec2f(Position)));
 
-			return -cos(Input * 0.01f) * 15 - cos(Input * 0.5f) * 2;
+			return 0;// -cos(Input * 0.01f) * 15 - cos(Input * 0.5f) * 2;
 		}
 
 		color3f GetTerrainColor(vec2i const & Position)
@@ -130,6 +132,10 @@ void CApplication::AddSceneObjects()
 	Shadow->SetDirection(vec3f(-1, 2, -1));
 	Shadow->SetColor(color3f(0.5f));
 	RenderPass->AddLight(Shadow);
+
+	CCoordinateFrameSceneObject * SceneAxis = new CCoordinateFrameSceneObject();
+	SceneAxis->SetShader(AxisShader);
+	RenderPass->AddSceneObject(SceneAxis);
 }
 
 

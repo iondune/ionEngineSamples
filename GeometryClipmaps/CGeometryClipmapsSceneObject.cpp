@@ -37,11 +37,11 @@ using namespace Scene;
 
 vec3f CartToLatLong(vec3f const & c)
 {
-	float earthR = 637813.7f;
+	float earthR = 6378137.f * 1.06932e-07f;
 	float r = c.Length();
 	float h = r - earthR;
-	float lng = atan2(c.Y, c.X) * (180.0f / Constants32::Pi) * 100.f;
-	float lat = asin(c.Z / r) * (180.0f / Constants32::Pi) * 100.f;
+	float lng = atan2(c.Y, c.X) * (180.0f / Constants32::Pi) * 1000.f;
+	float lat = asin(c.Z / r) * (180.0f / Constants32::Pi) * 1000.f;
 
 	return vec3f(lng, lat, h);
 }

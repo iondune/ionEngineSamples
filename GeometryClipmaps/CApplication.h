@@ -25,6 +25,7 @@ public:
 	ion::Scene::CRenderPass * RenderPass = nullptr;
 
 	SharedPointer<ion::Graphics::IShaderProgram> GeometryClipmapsShader;
+	SharedPointer<ion::Graphics::IShaderProgram> AxisShader;
 
 protected:
 

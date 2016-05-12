@@ -21,12 +21,12 @@ const float Pi = 3.14159;
 
 vec3 LatLongToCart(vec3 LongLatElev)
 {
-	float lat_rad = LongLatElev.y / 100.0 * (Pi / 180.0f);
-	float lng_rad = LongLatElev.x / 100.0 * (Pi / 180.0f);
+	float lat_rad = LongLatElev.y / 1000.0 * (Pi / 180.0f);
+	float lng_rad = LongLatElev.x / 1000.0 * (Pi / 180.0f);
 
 	float h = 0.0f;
-	float a = 637813.7;
-	float b = 635675.231425;
+	float a = 6378137 * 1.06932e-07;
+	float b = 6356752.31425 * 1.06932e-07;
 
 	float sin_lat = sin(lat_rad);
 	float cos_lat = cos(lat_rad);
