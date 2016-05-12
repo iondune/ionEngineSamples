@@ -82,7 +82,7 @@ void CApplication::SetupScene()
 	FreeCamera = new CPerspectiveCamera(Window->GetAspectRatio());
 	FreeCamera->SetPosition(vec3f(0, 3, -5));
 	FreeCamera->SetFocalLength(0.4f);
-	FreeCamera->SetFarPlane(10000.f);
+	FreeCamera->SetFarPlane(7000000.f);
 
 	CCameraController * Controller = new CCameraController(FreeCamera);
 	Controller->SetTheta(15.f * Constants32::Pi / 48.f);
@@ -119,7 +119,7 @@ void CApplication::AddSceneObjects()
 	GeometryClipmapsObject->Shader = GeometryClipmapsShader;
 	GeometryClipmapsObject->UseCameraPosition = true;
 	GeometryClipmapsObject->HeightInput = new SimpleHeight();
-	GeometryClipmapsObject->SetRotation(vec3f(3.1415f / 2, 0, 0));
+	//GeometryClipmapsObject->SetRotation(vec3f(3.1415f / 2, 0, 0));
 	RenderPass->AddSceneObject(GeometryClipmapsObject);
 
 	CDirectionalLight * Light = new CDirectionalLight();
@@ -148,6 +148,11 @@ void CApplication::MainLoop()
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
 		{
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::Separator();
+
+			vec3f const LongLat = CartToLatLong(FreeCamera->GetPosition());
+			ImGui::Text("Camera Long/Lat/Elevation: %.3f %.3f %.3f", LongLat.X, LongLat.Y, LongLat.Z);
+
 			ImGui::End();
 		}
 

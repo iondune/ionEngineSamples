@@ -5,6 +5,8 @@
 #include "CToroidalUpdater.h"
 
 
+vec3f CartToLatLong(vec3f const & c);
+
 class CGeometryClipmapsSceneObject : public ion::Scene::ISceneObject
 {
 

@@ -5,6 +5,47 @@
 using namespace ion;
 using namespace Scene;
 
+
+//vec3f LatLongToCart(vec3f const & LongLatElev)
+//{
+//	float lat_rad = LongLatElev.Y * (Constants32::Pi / 180.0f);
+//	float lng_rad = LongLatElev.X * (Constants32::Pi / 180.0f);
+//
+//	float h = 0.0f;
+//	float a = 6378137.f;
+//	float b = 6356752.31425f;
+//
+//	float sin_lat = sin(lat_rad);
+//	float cos_lat = cos(lat_rad);
+//	float sin_lng = sin(lng_rad);
+//	float cos_lng = cos(lng_rad);
+//
+//	if (LongLatElev.Z > -1)
+//	{
+//		h = LongLatElev.Z;
+//	}
+//
+//	float eSq = (a * a - b * b) / (a * a);
+//	float v = a / sqrt(1 - eSq * sin_lat * sin_lat);
+//
+//	float x = (v + h) * cos_lat * cos_lng;
+//	float y = (v + h) * cos_lat * sin_lng;
+//	float z = ((1 - eSq) * v + h) * sin_lat;
+//
+//	return vec3f(x, y, z);
+//}
+
+vec3f CartToLatLong(vec3f const & c)
+{
+	float earthR = 637813.7f;
+	float r = c.Length();
+	float h = r - earthR;
+	float lng = atan2(c.Y, c.X) * (180.0f / Constants32::Pi) * 100.f;
+	float lat = asin(c.Z / r) * (180.0f / Constants32::Pi) * 100.f;
+
+	return vec3f(lng, lat, h);
+}
+
 CGeometryClipmapsSceneObject::CGeometryClipmapsSceneObject()
 {}
 
@@ -82,9 +123,10 @@ void CGeometryClipmapsSceneObject::Draw(ion::Scene::CRenderPass * RenderPass)
 	{
 		vec3f TransformedPosition = ActiveCamera->GetPosition();
 		TransformedPosition.Transform(glm::inverse(Transformation.Get()), 1.f);
+		vec3f LongLatElev = CartToLatLong(TransformedPosition);
 		ActiveCameraPosition = vec2i(
-			(int) std::floor(TransformedPosition.X),
-			(int) std::floor(TransformedPosition.Z));
+			(int) std::floor(LongLatElev.X),
+			(int) std::floor(LongLatElev.Y));
 	}
 
 	///////////////////////////////////////////////////////////
