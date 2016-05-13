@@ -83,8 +83,8 @@ void CApplication::SetupScene()
 	FreeCamera = new CPerspectiveCamera(Window->GetAspectRatio());
 	FreeCamera->SetPosition(vec3f(0, 3, -5));
 	FreeCamera->SetFocalLength(0.4f);
-	FreeCamera->SetNearPlane(0.001f);
-	FreeCamera->SetFarPlane(10.f);
+	FreeCamera->SetNearPlane(0.01f);
+	FreeCamera->SetFarPlane(100.f);
 
 	CCameraController * Controller = new CCameraController(FreeCamera);
 	Controller->SetTheta(15.f * Constants32::Pi / 48.f);

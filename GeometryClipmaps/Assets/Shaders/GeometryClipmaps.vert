@@ -25,8 +25,8 @@ vec3 LatLongToCart(vec3 LongLatElev)
 	float lng_rad = LongLatElev.x / 1000.0 * (Pi / 180.0f);
 
 	float h = 0.0f;
-	float a = 6378137 * 1.06932e-07;
-	float b = 6356752.31425 * 1.06932e-07;
+	float a = 6378137;
+	float b = 6356752.31425;
 
 	float sin_lat = sin(lat_rad);
 	float cos_lat = cos(lat_rad);
@@ -41,9 +41,9 @@ vec3 LatLongToCart(vec3 LongLatElev)
 	float eSq = (a * a - b * b) / (a * a);
 	float v = a / sqrt(1 - eSq * sin_lat * sin_lat);
 
-	float x = (v + h) * cos_lat * cos_lng;
-	float y = (v + h) * cos_lat * sin_lng;
-	float z = ((1 - eSq) * v + h) * sin_lat;
+	float x = (v + h) * cos_lat * cos_lng * 1.06932e-06;
+	float y = (v + h) * cos_lat * sin_lng * 1.06932e-06;
+	float z = ((1 - eSq) * v + h) * sin_lat * 1.06932e-06;
 
 	return vec3(x, y, z);
 }

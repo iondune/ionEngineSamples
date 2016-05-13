@@ -37,7 +37,7 @@ using namespace Scene;
 
 vec3f CartToLatLong(vec3f const & c)
 {
-	float earthR = 6378137.f * 1.06932e-07f;
+	float earthR = 6378137.f * 1.06932e-06f;
 	float r = c.Length();
 	float h = r - earthR;
 	float lng = atan2(c.Y, c.X) * (180.0f / Constants32::Pi) * 1000.f;
