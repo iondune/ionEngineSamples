@@ -217,7 +217,7 @@ int main()
 			ImGui::SliderFloat("Light Camera Size", &LightViewSize, 1.f, 200.f);
 			ImGui::SliderFloat("Light Near Plane", &LightNear, 1.f, 300.f);
 			ImGui::SliderFloat("Light Far Plane", &LightFar, 1.f, 600.f);
-			ImGui::SliderFloat3("Light Direction", LightDirection.Values, -30.f, 30.f);
+			//ImGui::SliderFloat3("Light Direction", LightDirection.Values, -30.f, 30.f);
 			ImGui::Text("Light Position: %.3f %.3f %.3f", LightCamera->GetPosition().X, LightCamera->GetPosition().Y, LightCamera->GetPosition().Z);
 
 			ImGui::End();
