@@ -30,7 +30,8 @@ public:
 	ion::Scene::CSimpleMesh * CubeMesh = nullptr;
 	
 	SharedPointer<ion::Graphics::ITexture2D> GroundTexture;
-	SharedPointer<ion::Graphics::ITexture2D> BillboardTexture;
+	SharedPointer<ion::Graphics::ITexture2D> BillboardTexture1;
+	SharedPointer<ion::Graphics::ITexture2D> BillboardTexture2;
 
 protected:
 

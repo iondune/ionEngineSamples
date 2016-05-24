@@ -60,6 +60,12 @@ void CBillboardSystemSceneObject::Load(CRenderPass * RenderPass)
 	PipelineState->SetUniform("uGlobalScale", uGlobalScale);
 	PipelineState->SetBlendMode(EBlendMode::Alpha);
 
+	RenderPass->PreparePipelineStateForRendering(PipelineState, this);
+	Loaded[RenderPass] = true;
+}
+
+void CBillboardSystemSceneObject::Draw(CRenderPass * RenderPass)
+{
 	if (NeedToLoadInstances)
 	{
 		static uint const FloatsPerVertex = 4;
@@ -78,12 +84,6 @@ void CBillboardSystemSceneObject::Load(CRenderPass * RenderPass)
 		NeedToLoadInstances = false;
 	}
 
-	RenderPass->PreparePipelineStateForRendering(PipelineState, this);
-	Loaded[RenderPass] = true;
-}
-
-void CBillboardSystemSceneObject::Draw(CRenderPass * RenderPass)
-{
 	RenderPass->SubmitPipelineStateForRendering(PipelineState, this, (uint) Billboards.size(), 1);
 }
 
@@ -95,4 +95,10 @@ void CBillboardSystemSceneObject::SetGlobalScale(float const Scale)
 float CBillboardSystemSceneObject::GetGlobalScale() const
 {
 	return uGlobalScale;
+}
+
+void CBillboardSystemSceneObject::SetTexture(SharedPointer<ion::Graphics::ITexture2D> Texture)
+{
+	this->Texture = Texture;
+	TriggerReload();
 }

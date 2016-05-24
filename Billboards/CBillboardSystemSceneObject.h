@@ -34,6 +34,8 @@ public:
 	void SetGlobalScale(float const Scale);
 	float GetGlobalScale() const;
 
+	void SetTexture(SharedPointer<ion::Graphics::ITexture2D> Texture);
+
 	SharedPointer<ion::Graphics::IShaderProgram> Shader;
 	SharedPointer<ion::Graphics::ITexture2D> Texture;
 	vector<SBillboard> Billboards;

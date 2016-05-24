@@ -86,7 +86,8 @@ void CApplication::LoadAssets()
 		GroundTexture->SetWrapMode(ITexture::EWrapMode::Clamp);
 	}
 
-	BillboardTexture = AssetManager->LoadTexture("donut.png");
+	BillboardTexture1 = AssetManager->LoadTexture("donut.png");
+	BillboardTexture2 = AssetManager->LoadTexture("donut2.png");
 }
 
 void CApplication::SetupScene()
@@ -121,7 +122,7 @@ void CApplication::AddSceneObjects()
 
 	BillboardSystem = new CBillboardSystemSceneObject();
 	BillboardSystem->Shader = BillboardShader;
-	BillboardSystem->Texture = BillboardTexture;
+	BillboardSystem->SetTexture(BillboardTexture1);
 	RenderPass->AddSceneObject(BillboardSystem);
 
 	BillboardSystem->Billboards.push_back(CBillboardSystemSceneObject::SBillboard(vec3f(3, 4, 2)));
@@ -167,7 +168,21 @@ void CApplication::MainLoop()
 			ImGui::End();
 		}
 
-		BillboardSystem->SetGlobalScale(3.f + 2.f * (float) sin(TimeManager->GetRunTime()));
+		//BillboardSystem->SetGlobalScale(3.f + 2.f * (float) sin(TimeManager->GetRunTime()));
+
+		BillboardSystem->Billboards[0].Size = 1.f + sin((float) TimeManager->GetRunTime());
+		BillboardSystem->Billboards[1].Size = 1.f + sin((float) TimeManager->GetRunTime());
+		BillboardSystem->Billboards[2].Size = 1.f + sin((float) TimeManager->GetRunTime());
+		BillboardSystem->SendBillboardsToGPU();
+
+		if (Window->IsKeyDown(EKey::Space))
+		{
+			BillboardSystem->SetTexture(BillboardTexture2);
+		}
+		else
+		{
+			BillboardSystem->SetTexture(BillboardTexture1);
+		}
 
 		// Draw
 		RenderTarget->ClearColorAndDepth();
