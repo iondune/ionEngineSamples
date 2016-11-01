@@ -192,6 +192,11 @@ int main()
 	ColorPass->SetUniform("uLightMatrix", uLightMatrix);
 	ColorPass->SetTexture("uShadowMap", ShadowDepth);
 
+	// Obviously the shadow pass does not need these, but this will suppress warnings
+	// An object that supports different shaders for different passes is needed
+	ShadowPass->SetUniform("uLightMatrix", uLightMatrix);
+	ShadowPass->SetTexture("uShadowMap", ShadowDepth);
+
 
 	///////////////
 	// Main Loop //
