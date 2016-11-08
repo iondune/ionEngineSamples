@@ -11,6 +11,29 @@ using namespace ion::Scene;
 using namespace ion::Graphics;
 
 
+
+CSimpleMesh * CreateScreenQuad()
+{
+	CSimpleMesh * Mesh = new CSimpleMesh();
+
+	Mesh->Vertices.resize(4);
+	Mesh->Triangles.resize(2);
+
+	Mesh->Vertices[0].Position = vec3f(-1, -1, 0);
+	Mesh->Vertices[1].Position = vec3f(1, -1, 0);
+	Mesh->Vertices[2].Position = vec3f(1, 1, 0);
+	Mesh->Vertices[3].Position = vec3f(-1, 1, 0);
+
+	Mesh->Triangles[0].Indices[0] = 0;
+	Mesh->Triangles[0].Indices[1] = 1;
+	Mesh->Triangles[0].Indices[2] = 2;
+	Mesh->Triangles[1].Indices[0] = 0;
+	Mesh->Triangles[1].Indices[1] = 2;
+	Mesh->Triangles[1].Indices[2] = 3;
+
+	return Mesh;
+}
+
 int main()
 {
 	////////////////////
@@ -32,7 +55,7 @@ int main()
 	SceneManager->Init(GraphicsAPI);
 	AssetManager->Init(GraphicsAPI);
 
-	CWindow * Window = WindowManager->CreateWindow(vec2i(1600, 900), "Shadow Maps", EWindowType::Windowed);
+	CWindow * Window = WindowManager->CreateWindow(vec2i(1920, 1080), "Shadow Maps", EWindowType::Windowed);
 
 	GUIManager->Init(Window);
 
@@ -85,20 +108,21 @@ int main()
 	SceneManager->AddRenderPass(PostProcess);
 
 	CPerspectiveCamera * Camera = new CPerspectiveCamera(Window->GetAspectRatio());
-	Camera->SetPosition(vec3f(0, 3, -5));
+	Camera->SetPosition(vec3f(15.25f, 7.3f, -11.85f));
 	Camera->SetFocalLength(0.4f);
+	Camera->SetFarPlane(200.f);
 	ColorPass->SetActiveCamera(Camera);
 
 	CCameraController * Controller = new CCameraController(Camera);
-	Controller->SetTheta(15.f * Constants32::Pi / 48.f);
-	Controller->SetPhi(-Constants32::Pi / 16.f);
+	Controller->SetTheta(2.347f);
+	Controller->SetPhi(-0.326f);
 	Window->AddListener(Controller);
 	TimeManager->MakeUpdateTick(0.02)->AddListener(Controller);
 
 	vec3f LightDirection = vec3f(2, -12, 2);
 	float LightViewSize = 20.f;
-	float LightNear = 50.f;
-	float LightFar = 200.f;
+	float LightNear = 110.f;
+	float LightFar = 130.f;
 
 	COrthographicCamera * LightCamera = new COrthographicCamera(-LightViewSize, LightViewSize, -LightViewSize, LightViewSize);
 	LightCamera->SetPosition(-LightDirection * 10.f);
@@ -125,6 +149,8 @@ int main()
 	Sphere2->SetShader(DiffuseShader);
 	Sphere2->SetPosition(vec3f(4, 4, 0));
 	Sphere2->SetScale(3.f);
+	Sphere2->GetMaterial().Ambient *= Colors::Yellow;
+	Sphere2->GetMaterial().Diffuse *= Colors::Yellow;
 	ColorPass->AddSceneObject(Sphere2);
 	ShadowPass->AddSceneObject(Sphere2);
 
@@ -140,6 +166,8 @@ int main()
 	Sphere4->SetMesh(SphereMesh);
 	Sphere4->SetShader(DiffuseShader);
 	Sphere4->SetPosition(vec3f(3, 4, 6));
+	Sphere4->GetMaterial().Ambient *= Colors::Red;
+	Sphere4->GetMaterial().Diffuse *= Colors::Red;
 	ColorPass->AddSceneObject(Sphere4);
 	ShadowPass->AddSceneObject(Sphere4);
 
@@ -148,6 +176,8 @@ int main()
 	Cube1->SetShader(DiffuseShader);
 	Cube1->SetPosition(vec3f(-4, 4, 0));
 	Cube1->SetScale(3.f);
+	Cube1->GetMaterial().Ambient *= Colors::Cyan;
+	Cube1->GetMaterial().Diffuse *= Colors::Cyan;
 	ColorPass->AddSceneObject(Cube1);
 	ShadowPass->AddSceneObject(Cube1);
 
@@ -156,6 +186,8 @@ int main()
 	Cube2->SetShader(DiffuseShader);
 	Cube2->SetPosition(vec3f(-12, 2, 0));
 	Cube2->SetScale(4.f);
+	Cube2->GetMaterial().Ambient *= Colors::Blue;
+	Cube2->GetMaterial().Diffuse *= Colors::Blue;
 	ColorPass->AddSceneObject(Cube2);
 	ShadowPass->AddSceneObject(Cube2);
 
@@ -167,18 +199,21 @@ int main()
 	ColorPass->AddSceneObject(Plane);
 	ShadowPass->AddSceneObject(Plane);
 
-	//vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("terrain.obj");
-	//for (auto Mesh : Meshes)
-	//{
-	//	CSimpleMeshSceneObject * PlaneObject = new CSimpleMeshSceneObject();
-	//	PlaneObject->SetMesh(Mesh);
-	//	PlaneObject->SetShader(DiffuseShader);
-	//	ColorPass->AddSceneObject(PlaneObject);
-	//	ShadowPass->AddSceneObject(PlaneObject);
-	//}
+	vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("bunny.obj");
+	for (auto Mesh : Meshes)
+	{
+		CSimpleMeshSceneObject * PlaneObject = new CSimpleMeshSceneObject();
+		PlaneObject->SetMesh(Mesh);
+		PlaneObject->SetShader(DiffuseShader);
+		PlaneObject->SetPosition(vec3f(3, -1.f, -6));
+		PlaneObject->SetScale(vec3f(2.5f));
+		PlaneObject->SetRotation(vec3f(0, 3.14f / 4.f, 0));
+		ColorPass->AddSceneObject(PlaneObject);
+		ShadowPass->AddSceneObject(PlaneObject);
+	}
 
 	CSimpleMeshSceneObject * PostProcessObject = new CSimpleMeshSceneObject();
-	PostProcessObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
+	PostProcessObject->SetMesh(CreateScreenQuad());
 	PostProcessObject->SetShader(QuadCopyShader);
 	PostProcessObject->SetTexture("uTexture", ShadowDepth);
 	PostProcess->AddSceneObject(PostProcessObject);
@@ -187,6 +222,15 @@ int main()
 	Light1->SetDirection(LightDirection);
 	ColorPass->AddLight(Light1);
 	ShadowPass->AddLight(Light1);
+
+	CSimpleMeshSceneObject * LightSphere = new CSimpleMeshSceneObject();
+	LightSphere->SetMesh(SphereMesh);
+	LightSphere->SetShader(DiffuseShader);
+	LightSphere->SetPosition(LightDirection * -2);
+	LightSphere->SetScale(0.4f);
+	LightSphere->GetMaterial().Ambient = 1.f / 0.75f;
+	LightSphere->GetMaterial().Diffuse = 0;
+	ColorPass->AddSceneObject(LightSphere);
 
 	CUniform<glm::mat4> uLightMatrix;
 	ColorPass->SetUniform("uLightMatrix", uLightMatrix);

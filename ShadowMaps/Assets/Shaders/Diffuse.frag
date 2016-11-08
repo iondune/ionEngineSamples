@@ -67,7 +67,7 @@ void main()
 	}
 
 	float Shadow = ShadowCalculation(fLightSpacePosition);
-	outColor = vec4((1.0  - Shadow) * Diffuse + uMaterial.AmbientColor, 1);
+	outColor = vec4((1.0  - Shadow) * Diffuse + uMaterial.AmbientColor * 0.75, 1);
 
 	if (Shadow > 0.0)
 	{
