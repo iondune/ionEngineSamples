@@ -224,9 +224,8 @@ int main()
 			ImGui::SliderFloat("Light Far Plane", &LightFar, 1.f, 600.f);
 			//ImGui::SliderFloat3("Light Direction", LightDirection.Values, -30.f, 30.f);
 			ImGui::Text("Light Position: %.3f %.3f %.3f", LightCamera->GetPosition().X, LightCamera->GetPosition().Y, LightCamera->GetPosition().Z);
-
-			ImGui::End();
 		}
+		ImGui::End();
 
 		LightCamera->SetLeft(-LightViewSize);
 		LightCamera->SetRight(LightViewSize);
@@ -236,6 +235,7 @@ int main()
 		LightCamera->SetLookDirection(LightDirection);
 		LightCamera->SetNearPlane(LightNear);
 		LightCamera->SetFarPlane(LightFar);
+		LightCamera->Update();
 		uLightMatrix = LightCamera->GetProjectionMatrix() * LightCamera->GetViewMatrix();
 
 		ShadowBuffer->ClearColorAndDepth();
