@@ -112,7 +112,7 @@ int main()
 	CPerspectiveCamera * Camera = new CPerspectiveCamera(Window->GetAspectRatio());
 	Camera->SetPosition(vec3f(15.25f, 7.3f, -11.85f));
 	Camera->SetFocalLength(0.4f);
-	Camera->SetFarPlane(200.f);
+	Camera->SetFarPlane(1000.f);
 	ColorPass->SetActiveCamera(Camera);
 
 	CCameraController * Controller = new CCameraController(Camera);
@@ -192,10 +192,6 @@ int main()
 	ColorPass->AddSceneObject(Plane);
 	ShadowPass->AddSceneObject(Plane);
 
-	CLineSceneObject * Lines = new CLineSceneObject();
-	Lines->SetShader(ColorShader);
-	ColorPass->AddSceneObject(Lines);
-
 	vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("bunny.obj");
 	for (auto Mesh : Meshes)
 	{
@@ -208,6 +204,10 @@ int main()
 		ColorPass->AddSceneObject(PlaneObject);
 		ShadowPass->AddSceneObject(PlaneObject);
 	}
+
+	CLineSceneObject * Lines = new CLineSceneObject();
+	Lines->SetShader(ColorShader);
+	ColorPass->AddSceneObject(Lines);
 
 	CSimpleMeshSceneObject * PostProcessObject = new CSimpleMeshSceneObject();
 	PostProcessObject->SetMesh(CreateScreenQuad());
@@ -227,13 +227,18 @@ int main()
 	LightSphere->GetMaterial().Diffuse = 0;
 	ColorPass->AddSceneObject(LightSphere);
 
+
+	CUniform<bool> uDebugShadows = false;
 	CUniform<glm::mat4> uLightMatrix;
+
 	ColorPass->SetUniform("uLightMatrix", uLightMatrix);
+	ColorPass->SetUniform("uDebugShadows", uDebugShadows);
 	ColorPass->SetTexture("uShadowMap", ShadowDepth);
 
 	// Obviously the shadow pass does not need these, but this will suppress warnings
 	// An object that supports different shaders for different passes is needed
 	ShadowPass->SetUniform("uLightMatrix", uLightMatrix);
+	ShadowPass->SetUniform("uDebugShadows", uDebugShadows);
 	ShadowPass->SetTexture("uShadowMap", ShadowDepth);
 
 
@@ -272,6 +277,8 @@ int main()
 
 			ImGui::SliderFloat("Light Camera Distance", &LightDistance, 1.f, 200.f);
 			ImGui::Text("Light Position: %.3f %.3f %.3f", LightCamera->GetPosition().X, LightCamera->GetPosition().Y, LightCamera->GetPosition().Z);
+
+			ImGui::Checkbox("Debug Shadows", &uDebugShadows.Get());
 		}
 		ImGui::End();
 

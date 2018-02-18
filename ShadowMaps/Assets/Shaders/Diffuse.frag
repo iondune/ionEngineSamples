@@ -22,6 +22,7 @@ in vec4 fLightSpacePosition;
 uniform int uDirectionalLightsCount;
 uniform SDirectionalLight uDirectionalLights[LIGHT_MAX];
 uniform SMaterial uMaterial;
+uniform bool uDebugShadows;
 
 uniform sampler2D uShadowMap;
 
@@ -30,7 +31,6 @@ out vec4 outColor;
 
 void main()
 {
-	const bool DebugShadows = false;
 
 	vec3 Color = vec3(0);
 
@@ -69,18 +69,34 @@ void main()
 
 	const float shadowBias = 0.005;
 
-	if (ndc.x > 1.0 || ndc.y > 1.0 || ndc.x < -1.0 || ndc.y < -1.0)
+	if (ndc.x > 1.0 || ndc.x < -1.0)
 	{
 		// Point is outside of shadow view - "not in shadow"
-		if (DebugShadows)
+		if (uDebugShadows)
 		{
 			Color.rgb = vec3(1.0, 0.0, 0.0);
+		}
+	}
+	else if (ndc.y > 1.0 || ndc.y < -1.0)
+	{
+		// Point is outside of shadow view - "not in shadow"
+		if (uDebugShadows)
+		{
+			Color.rgb = vec3(1.0, 0.5, 0.0);
+		}
+	}
+	else if (ndc.z > 1.0 || ndc.z < -1.0)
+	{
+		// Point is outside of shadow view - "not in shadow"
+		if (uDebugShadows)
+		{
+			Color.rgb = vec3(1.0, 0.0, 1.0);
 		}
 	}
 	else if (currentDepth - shadowBias < closestDepth)
 	{
 		// Point is in front of shadow map value - "not in shadow"
-		if (DebugShadows)
+		if (uDebugShadows)
 		{
 			Color.rgb = vec3(0.0, 1.0, 0.0) * currentDepth;
 		}
@@ -90,7 +106,7 @@ void main()
 		Color = Ambient;
 
 		// In shadow
-		if (DebugShadows)
+		if (uDebugShadows)
 		{
 			Color.rgb = vec3(0.0, 0.0, 1.0) * currentDepth;
 		}
