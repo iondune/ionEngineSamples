@@ -229,16 +229,19 @@ int main()
 
 
 	CUniform<bool> uDebugShadows = false;
+	CUniform<float> uShadowBias = 0.005f;
 	CUniform<glm::mat4> uLightMatrix;
 
 	ColorPass->SetUniform("uLightMatrix", uLightMatrix);
 	ColorPass->SetUniform("uDebugShadows", uDebugShadows);
+	ColorPass->SetUniform("uShadowBias", uShadowBias);
 	ColorPass->SetTexture("uShadowMap", ShadowDepth);
 
 	// Obviously the shadow pass does not need these, but this will suppress warnings
 	// An object that supports different shaders for different passes is needed
 	ShadowPass->SetUniform("uLightMatrix", uLightMatrix);
 	ShadowPass->SetUniform("uDebugShadows", uDebugShadows);
+	ShadowPass->SetUniform("uShadowBias", uShadowBias);
 	ShadowPass->SetTexture("uShadowMap", ShadowDepth);
 
 
@@ -278,7 +281,10 @@ int main()
 			ImGui::SliderFloat("Light Camera Distance", &LightDistance, 1.f, 200.f);
 			ImGui::Text("Light Position: %.3f %.3f %.3f", LightCamera->GetPosition().X, LightCamera->GetPosition().Y, LightCamera->GetPosition().Z);
 
+			ImGui::Separator();
+
 			ImGui::Checkbox("Debug Shadows", &uDebugShadows.Get());
+			ImGui::SliderFloat("Shadow Bias", &uShadowBias.Get(), 0.0f, 0.5f, "%.6f", 2.f);
 		}
 		ImGui::End();
 

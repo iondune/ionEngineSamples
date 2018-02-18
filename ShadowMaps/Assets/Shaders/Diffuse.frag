@@ -22,7 +22,9 @@ in vec4 fLightSpacePosition;
 uniform int uDirectionalLightsCount;
 uniform SDirectionalLight uDirectionalLights[LIGHT_MAX];
 uniform SMaterial uMaterial;
+
 uniform bool uDebugShadows;
+uniform float uShadowBias;
 
 uniform sampler2D uShadowMap;
 
@@ -67,8 +69,6 @@ void main()
 	// Calculate depth in light space
 	float currentDepth = ndc.z * 0.5 + 0.5;
 
-	const float shadowBias = 0.005;
-
 	if (ndc.x > 1.0 || ndc.x < -1.0)
 	{
 		// Point is outside of shadow view - "not in shadow"
@@ -93,7 +93,7 @@ void main()
 			Color.rgb = vec3(1.0, 0.0, 1.0);
 		}
 	}
-	else if (currentDepth - shadowBias < closestDepth)
+	else if (currentDepth - uShadowBias < closestDepth)
 	{
 		// Point is in front of shadow map value - "not in shadow"
 		if (uDebugShadows)
