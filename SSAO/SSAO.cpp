@@ -187,14 +187,16 @@ int main()
 	PlaneObject->SetShader(GeometryShader);
 	RenderPass->AddSceneObject(PlaneObject);
 
-	//vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("terrain.obj");
-	//for (auto Mesh : Meshes)
-	//{
-	//	CSimpleMeshSceneObject * PlaneObject = new CSimpleMeshSceneObject();
-	//	PlaneObject->SetMesh(Mesh);
-	//	PlaneObject->SetShader(GeometryShader);
-	//	RenderPass->AddSceneObject(PlaneObject);
-	//}
+	vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("dragon10k.obj");
+	for (auto Mesh : Meshes)
+	{
+		CSimpleMeshSceneObject * MeshObject = new CSimpleMeshSceneObject();
+		MeshObject->SetMesh(Mesh);
+		MeshObject->SetShader(GeometryShader);
+		MeshObject->SetPosition(vec3f(6.f, 1.1f, 4.f));
+		MeshObject->SetScale(4.f);
+		RenderPass->AddSceneObject(MeshObject);
+	}
 
 	float SSAORadius = 1.0f;
 
