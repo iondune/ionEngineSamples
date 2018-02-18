@@ -58,6 +58,7 @@ int main()
 	CWindow * Window = WindowManager->CreateWindow(vec2i(1920, 1080), "Shadow Maps", EWindowType::Windowed);
 
 	GUIManager->Init(Window);
+	Window->AddListener(GUIManager);
 
 	AssetManager->AddAssetPath("Assets/");
 	AssetManager->SetShaderPath("Shaders/");
