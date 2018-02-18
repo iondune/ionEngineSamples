@@ -42,6 +42,7 @@ int main()
 	CWindow * Window = WindowManager->CreateWindow(vec2i(1600, 900), "DemoApplication", EWindowType::Windowed);
 
 	GUIManager->Init(Window);
+	Window->AddListener(GUIManager);
 
 	AssetManager->AddAssetPath("Assets/");
 	AssetManager->SetShaderPath("Shaders/");
