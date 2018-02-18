@@ -92,13 +92,14 @@ int main()
 	std::default_random_engine generator;
 
 	// Sample kernel
+	int const numSamples = 64;
 	std::vector<vec3f> ssaoKernel;
-	for (uint i = 0; i < 64; ++i)
+	for (uint i = 0; i < numSamples; ++i)
 	{
 		vec3f sample(randomFloats(generator) * 2 - 1, randomFloats(generator) * 2 - 1, randomFloats(generator) * 0.9f + 0.1f);
 		sample.Normalize();
 		sample *= randomFloats(generator);
-		float scale = float(i) / 64.f;
+		float scale = float(i) / numSamples;
 
 		// Scale samples s.t. they're more aligned to center of kernel
 		scale = lerp(0.1f, 1.0f, scale * scale);
