@@ -1,5 +1,5 @@
 
-#version 150
+#version 330
 
 #define LIGHT_MAX 4
 
@@ -28,34 +28,19 @@ uniform sampler2D uShadowMap;
 out vec4 outColor;
 
 
-float ShadowCalculation(vec4 fragPosLightSpace)
-{
-	// perform perspective divide
-	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-
-	// Transform to [0,1] range
-	projCoords = projCoords * 0.5 + 0.5;
-
-	// Get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-	float closestDepth = texture(uShadowMap, projCoords.xy).r;
-
-	// Get depth of current fragment from light's perspective
-	float currentDepth = projCoords.z;
-
-	float bias = 0.005;
-	// Check whether current frag pos is in shadow
-	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
-
-	if (projCoords.x > 1.0 || projCoords.y > 1.0 || projCoords.x < 0.0 || projCoords.y < 0.0)
-		shadow = 0.0;
-
-	return shadow;
-}
-
-
 void main()
 {
+	const bool DebugShadows = false;
+
+	vec3 Color = vec3(0);
+
+
+	//////////////////////////////
+	// Standard Diffuse Shading //
+	//////////////////////////////
+
 	vec3 Diffuse = vec3(0);
+	vec3 Ambient = uMaterial.AmbientColor * 0.75;
 
 	for (int i = 0; i < LIGHT_MAX && i < uDirectionalLightsCount; ++ i)
 	{
@@ -65,12 +50,53 @@ void main()
 		float Shading = clamp(dot(nNormal, nLight), 0.0, 1.0);
 		Diffuse += uMaterial.DiffuseColor * Shading * uDirectionalLights[i].Color;
 	}
+	Color = Diffuse + Ambient;
 
-	float Shadow = ShadowCalculation(fLightSpacePosition);
-	outColor = vec4((1.0  - Shadow) * Diffuse + uMaterial.AmbientColor * 0.75, 1);
 
-	if (Shadow > 0.0)
+
+	////////////////////////
+	// Shadow Calculation //
+	////////////////////////
+
+	// Transform to NDC
+	vec3 ndc = fLightSpacePosition.xyz / fLightSpacePosition.w;
+
+	// Read depth from shadow map
+	float closestDepth = texture(uShadowMap, ndc.xy * 0.5 + vec2(0.5)).r;
+
+	// Calculate depth in light space
+	float currentDepth = ndc.z * 0.5 + 0.5;
+
+	const float shadowBias = 0.005;
+
+	if (ndc.x > 1.0 || ndc.y > 1.0 || ndc.x < -1.0 || ndc.y < -1.0)
 	{
-		// outColor.rgb = vec3(0.0, 1.0, 1.0);
+		// Point is outside of shadow view - "not in shadow"
+		if (DebugShadows)
+		{
+			Color.rgb = vec3(1.0, 0.0, 0.0);
+		}
 	}
+	else if (currentDepth - shadowBias < closestDepth)
+	{
+		// Point is in front of shadow map value - "not in shadow"
+		if (DebugShadows)
+		{
+			Color.rgb = vec3(0.0, 1.0, 0.0) * currentDepth;
+		}
+	}
+	else
+	{
+		Color = Ambient;
+
+		// In shadow
+		if (DebugShadows)
+		{
+			Color.rgb = vec3(0.0, 0.0, 1.0) * currentDepth;
+		}
+	}
+
+
+
+	outColor = vec4(Color, 1.0);
 }

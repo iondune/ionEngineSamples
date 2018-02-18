@@ -1,5 +1,5 @@
 
-#version 150
+#version 330
 
 in vec3 vPosition;
 in vec3 vNormal;
@@ -22,7 +22,7 @@ void main()
 
 	fWorldPosition = Position.xyz;
 	fLightSpacePosition = uLightMatrix * Position;
-	fNormal = vNormal;
+	fNormal = (inverse(transpose(uModelMatrix)) * vec4(vNormal, 0.0)).xyz;
 
 	gl_Position = uProjectionMatrix * uViewMatrix * Position;
 }
