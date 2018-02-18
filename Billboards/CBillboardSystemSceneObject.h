@@ -13,12 +13,12 @@ public:
 	struct SBillboard
 	{
 		float Size = 1;
-		vec3f Position;
+		ion::vec3f Position;
 
 		SBillboard()
 		{}
 
-		SBillboard(vec3f const & Position)
+		SBillboard(ion::vec3f const & Position)
 		{
 			this->Position = Position;
 		}
@@ -34,18 +34,18 @@ public:
 	void SetGlobalScale(float const Scale);
 	float GetGlobalScale() const;
 
-	void SetTexture(SharedPointer<ion::Graphics::ITexture2D> Texture);
+	void SetTexture(ion::SharedPointer<ion::Graphics::ITexture2D> Texture);
 
-	SharedPointer<ion::Graphics::IShaderProgram> Shader;
-	SharedPointer<ion::Graphics::ITexture2D> Texture;
-	vector<SBillboard> Billboards;
+	ion::SharedPointer<ion::Graphics::IShader> Shader;
+	ion::SharedPointer<ion::Graphics::ITexture2D> Texture;
+	ion::vector<SBillboard> Billboards;
 
 protected:
 
 	bool NeedToLoadInstances = true;
 
-	SharedPointer<ion::Graphics::IPipelineState> PipelineState;
-	SharedPointer<ion::Graphics::IVertexBuffer> InstanceBuffer;
+	ion::SharedPointer<ion::Graphics::IPipelineState> PipelineState;
+	ion::SharedPointer<ion::Graphics::IVertexBuffer> InstanceBuffer;
 
 	ion::Graphics::CUniform<float> uGlobalScale = 1;
 

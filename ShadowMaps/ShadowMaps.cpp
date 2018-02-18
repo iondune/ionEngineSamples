@@ -69,8 +69,8 @@ int main()
 
 	SharedPointer<IFrameBuffer> ShadowBuffer = Context->CreateFrameBuffer();
 
-	SharedPointer<ITexture2D> ShadowTexture = GraphicsAPI->CreateTexture2D(vec2u(4096), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Fix8);
-	SharedPointer<ITexture2D> ShadowDepth = GraphicsAPI->CreateTexture2D(vec2u(4096), ITexture::EMipMaps::False, ITexture::EFormatComponents::R, ITexture::EInternalFormatType::Depth);
+	SharedPointer<ITexture2D> ShadowTexture = GraphicsAPI->CreateTexture2D(vec2i(4096), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Fix8);
+	SharedPointer<ITexture2D> ShadowDepth = GraphicsAPI->CreateTexture2D(vec2i(4096), ITexture::EMipMaps::False, ITexture::EFormatComponents::R, ITexture::EInternalFormatType::Depth);
 	ShadowBuffer->AttachColorTexture(ShadowTexture, 0);
 	ShadowBuffer->AttachDepthTexture(ShadowDepth);
 	if (! ShadowBuffer->CheckCorrectness())
@@ -87,8 +87,8 @@ int main()
 	CSimpleMesh * PlaneMesh = CGeometryCreator::CreatePlane(vec2f(100.f));
 	CSimpleMesh * CubeMesh = CGeometryCreator::CreateCube();
 
-	SharedPointer<IShaderProgram> DiffuseShader = AssetManager->LoadShader("Diffuse");
-	SharedPointer<IShaderProgram> QuadCopyShader = AssetManager->LoadShader("QuadCopy");
+	SharedPointer<IShader> DiffuseShader = AssetManager->LoadShader("Diffuse");
+	SharedPointer<IShader> QuadCopyShader = AssetManager->LoadShader("QuadCopy");
 
 
 	////////////////////
@@ -149,8 +149,8 @@ int main()
 	Sphere2->SetShader(DiffuseShader);
 	Sphere2->SetPosition(vec3f(4, 4, 0));
 	Sphere2->SetScale(3.f);
-	Sphere2->GetMaterial().Ambient *= Colors::Yellow;
-	Sphere2->GetMaterial().Diffuse *= Colors::Yellow;
+	Sphere2->GetMaterial().Ambient *= Color::Basic::Yellow;
+	Sphere2->GetMaterial().Diffuse *= Color::Basic::Yellow;
 	ColorPass->AddSceneObject(Sphere2);
 	ShadowPass->AddSceneObject(Sphere2);
 
@@ -166,8 +166,8 @@ int main()
 	Sphere4->SetMesh(SphereMesh);
 	Sphere4->SetShader(DiffuseShader);
 	Sphere4->SetPosition(vec3f(3, 4, 6));
-	Sphere4->GetMaterial().Ambient *= Colors::Red;
-	Sphere4->GetMaterial().Diffuse *= Colors::Red;
+	Sphere4->GetMaterial().Ambient *= Color::Basic::Red;
+	Sphere4->GetMaterial().Diffuse *= Color::Basic::Red;
 	ColorPass->AddSceneObject(Sphere4);
 	ShadowPass->AddSceneObject(Sphere4);
 
@@ -176,8 +176,8 @@ int main()
 	Cube1->SetShader(DiffuseShader);
 	Cube1->SetPosition(vec3f(-4, 4, 0));
 	Cube1->SetScale(3.f);
-	Cube1->GetMaterial().Ambient *= Colors::Cyan;
-	Cube1->GetMaterial().Diffuse *= Colors::Cyan;
+	Cube1->GetMaterial().Ambient *= Color::Basic::Cyan;
+	Cube1->GetMaterial().Diffuse *= Color::Basic::Cyan;
 	ColorPass->AddSceneObject(Cube1);
 	ShadowPass->AddSceneObject(Cube1);
 
@@ -186,16 +186,16 @@ int main()
 	Cube2->SetShader(DiffuseShader);
 	Cube2->SetPosition(vec3f(-12, 2, 0));
 	Cube2->SetScale(4.f);
-	Cube2->GetMaterial().Ambient *= Colors::Blue;
-	Cube2->GetMaterial().Diffuse *= Colors::Blue;
+	Cube2->GetMaterial().Ambient *= Color::Basic::Blue;
+	Cube2->GetMaterial().Diffuse *= Color::Basic::Blue;
 	ColorPass->AddSceneObject(Cube2);
 	ShadowPass->AddSceneObject(Cube2);
 
 	CSimpleMeshSceneObject * Plane = new CSimpleMeshSceneObject();
 	Plane->SetMesh(PlaneMesh);
 	Plane->SetShader(DiffuseShader);
-	Plane->GetMaterial().Ambient *= Colors::Green;
-	Plane->GetMaterial().Diffuse *= Colors::Green;
+	Plane->GetMaterial().Ambient *= Color::Basic::Green;
+	Plane->GetMaterial().Diffuse *= Color::Basic::Green;
 	ColorPass->AddSceneObject(Plane);
 	ShadowPass->AddSceneObject(Plane);
 

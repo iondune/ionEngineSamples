@@ -4,7 +4,7 @@
 #include <ionEngine.h>
 
 
-class CApplication : public Singleton<CApplication>, public IEventListener
+class CApplication : public ion::Singleton<CApplication>, public IEventListener
 {
 
 public:
@@ -12,25 +12,25 @@ public:
 	void Run();
 	void OnEvent(IEvent & Event);
 
-	SingletonPointer<ion::CWindowManager> WindowManager;
-	SingletonPointer<ion::CTimeManager> TimeManager;
-	SingletonPointer<ion::CSceneManager> SceneManager;
-	SingletonPointer<ion::CAssetManager> AssetManager;
-	SingletonPointer<ion::CGUIManager> GUIManager;
-	SingletonPointer<ion::CGraphicsAPI> GraphicsAPI;
+	ion::SingletonPointer<ion::CWindowManager> WindowManager;
+	ion::SingletonPointer<ion::CTimeManager> TimeManager;
+	ion::SingletonPointer<ion::CSceneManager> SceneManager;
+	ion::SingletonPointer<ion::CAssetManager> AssetManager;
+	ion::SingletonPointer<ion::CGUIManager> GUIManager;
+	ion::SingletonPointer<ion::CGraphicsAPI> GraphicsAPI;
 
 	ion::CWindow * Window = nullptr;
-	SharedPointer<ion::Graphics::IGraphicsContext> GraphicsContext;
+	ion::SharedPointer<ion::Graphics::IGraphicsContext> GraphicsContext;
 	ion::Scene::CRenderPass * RenderPass = nullptr;
 
-	SharedPointer<ion::Graphics::IShaderProgram> SimpleShader;
-	SharedPointer<ion::Graphics::IShaderProgram> SimpleTextureShader;
-	SharedPointer<ion::Graphics::IShaderProgram> DiffuseShader;
-	SharedPointer<ion::Graphics::IShaderProgram> DiffuseTextureShader;
+	ion::SharedPointer<ion::Graphics::IShader> SimpleShader;
+	ion::SharedPointer<ion::Graphics::IShader> SimpleTextureShader;
+	ion::SharedPointer<ion::Graphics::IShader> DiffuseShader;
+	ion::SharedPointer<ion::Graphics::IShader> DiffuseTextureShader;
 
 	ion::Scene::CSimpleMesh * CubeMesh = nullptr;
 	
-	SharedPointer<ion::Graphics::ITexture> GroundTexture;
+	ion::SharedPointer<ion::Graphics::ITexture> GroundTexture;
 
 protected:
 
@@ -40,12 +40,12 @@ protected:
 	void AddSceneObjects();
 	void MainLoop();
 
-	SharedPointer<ion::Graphics::IRenderTarget> RenderTarget = nullptr;
+	ion::SharedPointer<ion::Graphics::IRenderTarget> RenderTarget = nullptr;
 	ion::Scene::CPerspectiveCamera * FreeCamera = nullptr;
 
 private:
 
-	friend class Singleton<CApplication>;
+	friend class ion::Singleton<CApplication>;
 	CApplication()
 	{}
 

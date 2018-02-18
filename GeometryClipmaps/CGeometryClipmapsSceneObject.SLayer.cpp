@@ -12,7 +12,7 @@ CGeometryClipmapsSceneObject::SLayer::SLayer(CGeometryClipmapsSceneObject * Owne
 
 	// Create Colormap Texture
 	ColorMap = RenderPass->GetGraphicsAPI()->CreateTexture2D(
-		vec2i(HeightmapResolution),
+		ion::vec2i(HeightmapResolution),
 		ion::Graphics::ITexture::EMipMaps::False,
 		ion::Graphics::ITexture::EFormatComponents::RGB,
 		ion::Graphics::ITexture::EInternalFormatType::Fix8);
@@ -22,7 +22,7 @@ CGeometryClipmapsSceneObject::SLayer::SLayer(CGeometryClipmapsSceneObject * Owne
 
 	// Create Normalmap Texture
 	NormalMap = RenderPass->GetGraphicsAPI()->CreateTexture2D(
-		vec2i(HeightmapResolution),
+		ion::vec2i(HeightmapResolution),
 		ion::Graphics::ITexture::EMipMaps::False,
 		ion::Graphics::ITexture::EFormatComponents::RGB,
 		ion::Graphics::ITexture::EInternalFormatType::Fix8);
@@ -32,7 +32,7 @@ CGeometryClipmapsSceneObject::SLayer::SLayer(CGeometryClipmapsSceneObject * Owne
 
 	// Create Heightmap Texture
 	HeightMap = RenderPass->GetGraphicsAPI()->CreateTexture2D(
-		vec2i(HeightmapResolution),
+		ion::vec2i(HeightmapResolution),
 		ion::Graphics::ITexture::EMipMaps::False,
 		ion::Graphics::ITexture::EFormatComponents::R,
 		ion::Graphics::ITexture::EInternalFormatType::Float32);
@@ -41,17 +41,17 @@ CGeometryClipmapsSceneObject::SLayer::SLayer(CGeometryClipmapsSceneObject * Owne
 	HeightMap->SetWrapMode(ion::Graphics::ITexture::EWrapMode::Repeat);
 
 	// Determine starting ClipRegion
-	vec2i const ClipPos = vec2i() - vec2i(GeometrySize / 2);
-	ActiveRegion = rect2i(ClipPos, vec2i(GeometrySize));
+	ion::vec2i const ClipPos = ion::vec2i() - ion::vec2i(GeometrySize / 2);
+	ActiveRegion = ion::rect2i(ClipPos, ion::vec2i(GeometrySize));
 
 	// Default Data Upload
-	SendSample(0, 0, HeightmapResolution, HeightmapResolution, ClipPos, vec2i(0, 0));
+	SendSample(0, 0, HeightmapResolution, HeightmapResolution, ClipPos, ion::vec2i(0, 0));
 
 	IndexBuffer = RenderPass->GetGraphicsAPI()->CreateIndexBuffer();
 	PipelineState = RenderPass->GetGraphicsContext()->CreatePipelineState();
 }
 
-int CGeometryClipmapsSceneObject::SLayer::SendSample(int const x1, int const y1, int const x2, int const y2, vec2i const & NewClipPos, vec2i const & NewDataOffset)
+int CGeometryClipmapsSceneObject::SLayer::SendSample(int const x1, int const y1, int const x2, int const y2, ion::vec2i const & NewClipPos, ion::vec2i const & NewDataOffset)
 {
 	//////////////////////////
 	// Parameter Validation //
@@ -102,19 +102,19 @@ int CGeometryClipmapsSceneObject::SLayer::SendSample(int const x1, int const y1,
 			}
 			else
 			{
-				vec2i Tile = vec2i(x, y);
+				ion::vec2i Tile = ion::vec2i(x, y);
 				
 				if (Tile.X < NewDataOffset.X)
 					Tile.X += (HeightmapResolution);
 				if (Tile.Y < NewDataOffset.Y)
 					Tile.Y += (HeightmapResolution);
 				Tile -= NewDataOffset;
-				Tile += (NewClipPos - vec2i(1));
+				Tile += (NewClipPos - ion::vec2i(1));
 				Tile *= ScaleFactor;
 
 				float Height = 0;
-				vec3f Normal = vec3f(0, 1, 0);
-				color3f Color = Colors::Blue;
+				ion::vec3f Normal = ion::vec3f(0, 1, 0);
+				ion::color3f Color = ion::Color::Basic::Blue;
 
 				if (Owner->HeightInput)
 				{
@@ -141,9 +141,9 @@ int CGeometryClipmapsSceneObject::SLayer::SendSample(int const x1, int const y1,
 	// Buffer Upload & Cleanup //
 	/////////////////////////////
 
-	HeightMap->UploadSubRegion(HeightData, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::R, ion::Graphics::EScalarType::Float);
-	ColorMap->UploadSubRegion(ColorData, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::RGB, ion::Graphics::EScalarType::Float);
-	NormalMap->UploadSubRegion(NormalData, vec2u(x1, y1), vec2u(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::RGB, ion::Graphics::EScalarType::Float);
+	HeightMap->UploadSubRegion(HeightData, ion::vec2i(x1, y1), ion::vec2i(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::R, ion::Graphics::EScalarType::Float);
+	ColorMap->UploadSubRegion(ColorData, ion::vec2i(x1, y1), ion::vec2i(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::RGB, ion::Graphics::EScalarType::Float);
+	NormalMap->UploadSubRegion(NormalData, ion::vec2i(x1, y1), ion::vec2i(x2 - x1, y2 - y1), ion::Graphics::ITexture::EFormatComponents::RGB, ion::Graphics::EScalarType::Float);
 
 	delete [] HeightData;
 	delete [] ColorData;
@@ -155,28 +155,28 @@ int CGeometryClipmapsSceneObject::SLayer::SendSample(int const x1, int const y1,
 	return -1;
 }
 
-vec2i CGeometryClipmapsSceneObject::SLayer::GetDesiredActiveRegion(vec2i const & ViewerPosition) const
+ion::vec2i CGeometryClipmapsSceneObject::SLayer::GetDesiredActiveRegion(ion::vec2i const & ViewerPosition) const
 {
 	static const auto MakeEven = [](int const i) -> int
 	{
 		return i % 2 ? i - 1 : i;
 	};
 
-	vec2i CenterPosition = ViewerPosition / ScaleFactor;
+	ion::vec2i CenterPosition = ViewerPosition / ScaleFactor;
 
 	// only allow even coordinates so that inner layers occupy the same grid as outer ones
 	CenterPosition.X = MakeEven(CenterPosition.X);
 	CenterPosition.Y = MakeEven(CenterPosition.Y);
 
-	return CenterPosition - vec2i(GeometrySize / 2);
+	return CenterPosition - ion::vec2i(GeometrySize / 2);
 }
 
-void CGeometryClipmapsSceneObject::SLayer::SetActiveRegion(vec2i const & NewActiveRegion)
+void CGeometryClipmapsSceneObject::SLayer::SetActiveRegion(ion::vec2i const & NewActiveRegion)
 {
 	ActiveRegion.Position = NewActiveRegion;
 }
 
-int CGeometryClipmapsSceneObject::SLayer::GenerateAndUploadNewData(vec2i const & DataOffsetMove)
+int CGeometryClipmapsSceneObject::SLayer::GenerateAndUploadNewData(ion::vec2i const & DataOffsetMove)
 {
 	Updater.SampleUploader = this;
 	Updater.TextureResolution = HeightmapResolution;
@@ -188,7 +188,7 @@ int CGeometryClipmapsSceneObject::SLayer::GenerateAndUploadNewData(vec2i const &
 	return Updater.TotalSamplesUploaded;
 }
 
-void CGeometryClipmapsSceneObject::SLayer::UploadSample(vec2i const & LowerBound, vec2i const & UpperBound, vec2i const & NewDataOffset)
+void CGeometryClipmapsSceneObject::SLayer::UploadSample(ion::vec2i const & LowerBound, ion::vec2i const & UpperBound, ion::vec2i const & NewDataOffset)
 {
 	SendSample(LowerBound.X, LowerBound.Y, UpperBound.X, UpperBound.Y, ActiveRegion.Position, NewDataOffset);
 }

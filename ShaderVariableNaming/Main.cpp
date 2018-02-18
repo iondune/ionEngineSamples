@@ -4,9 +4,9 @@
 
 int main()
 {
-	Log::AddDefaultOutputs();
+	ion::Log::AddDefaultOutputs();
 
-	SingletonPointer<CApplication> Application;
+	ion::SingletonPointer<CApplication> Application;
 	Application->Run();
 	return 0;
 }

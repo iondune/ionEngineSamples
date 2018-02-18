@@ -64,7 +64,6 @@ void CApplication::InitializeEngine()
 	RenderTarget->SetClearColor(color3f(0.9f));
 
 	GUIManager->Init(Window);
-	GUIManager->AddFontFromFile("Assets/GUI/OpenSans.ttf", 18.f);
 	Window->AddListener(GUIManager);
 }
 

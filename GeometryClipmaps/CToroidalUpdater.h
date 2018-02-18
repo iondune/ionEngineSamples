@@ -14,7 +14,7 @@ public:
 
 	public:
 
-		virtual void UploadSample(vec2i const & LowerBound, vec2i const & UpperBound, vec2i const & NewDataOffset) = 0;
+		virtual void UploadSample(ion::vec2i const & LowerBound, ion::vec2i const & UpperBound, ion::vec2i const & NewDataOffset) = 0;
 
 	};
 
@@ -24,12 +24,12 @@ public:
 
 	// Outputs
 	int TotalSamplesUploaded = 0;
-	vec2i FinalOffset;
+	ion::vec2i FinalOffset;
 
-	void DoUpdate(vec2i const LastPosition, vec2i const NewPosition);
+	void DoUpdate(ion::vec2i const LastPosition, ion::vec2i const NewPosition);
 
 protected:
 
-	int SendSample(int const x0, int const y0, int const x1, int const y1, vec2i const & FinalOffset);
+	int SendSample(int const x0, int const y0, int const x1, int const y1, ion::vec2i const & FinalOffset);
 
 };

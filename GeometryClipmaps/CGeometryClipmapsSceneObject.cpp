@@ -83,7 +83,7 @@ void CGeometryClipmapsSceneObject::Load(ion::Scene::CRenderPass * RenderPass)
 		Layers.push_back(new SLayer(this, i, RenderPass));
 		SLayer * Layer = Layers.back();
 		SharedPointer<Graphics::IPipelineState> PipelineState = Layer->PipelineState;
-		PipelineState->SetProgram(Shader);
+		PipelineState->SetShader(Shader);
 
 		PipelineState->SetVertexBuffer(0, VertexBuffer);
 

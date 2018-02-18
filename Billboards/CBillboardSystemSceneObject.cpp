@@ -17,7 +17,7 @@ void CBillboardSystemSceneObject::SendBillboardsToGPU()
 
 void CBillboardSystemSceneObject::Load(CRenderPass * RenderPass)
 {
-	vector<f32> const Vertices
+	vector<float> const Vertices
 	{
 		0.5f,  0.5f,   1, 1,
 		0.5f, -0.5f,   1, 0,
@@ -25,7 +25,7 @@ void CBillboardSystemSceneObject::Load(CRenderPass * RenderPass)
 		-0.5f,  0.5f,   0, 1,
 	};
 
-	vector<u32> const Indices
+	vector<uint> const Indices
 	{
 		0, 1, 2,
 		0, 2, 3,
@@ -52,7 +52,7 @@ void CBillboardSystemSceneObject::Load(CRenderPass * RenderPass)
 	InstanceBuffer->SetInputLayout(InstanceLayout, ION_ARRAYSIZE(InstanceLayout));
 
 	PipelineState = RenderPass->GetGraphicsContext()->CreatePipelineState();
-	PipelineState->SetProgram(Shader);
+	PipelineState->SetShader(Shader);
 	PipelineState->SetIndexBuffer(IndexBuffer);
 	PipelineState->SetVertexBuffer(0, VertexBuffer);
 	PipelineState->SetVertexBuffer(1, InstanceBuffer);
