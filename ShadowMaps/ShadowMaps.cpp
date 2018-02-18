@@ -282,6 +282,13 @@ int main()
 		}
 		ImGui::End();
 
+		ImGui::SetNextWindowPos(ImVec2(600, 10), ImGuiSetCond_Once);
+		if (ImGui::Begin("Shadow Map"))
+		{
+			ImGui::Image(GUIManager->GetTextureID(ShadowDepth), vec2f(250));
+		}
+		ImGui::End();
+
 		Light1->SetDirection(LightDirection);
 		LightSphere->SetPosition(LightDirection * LightDistance);
 
