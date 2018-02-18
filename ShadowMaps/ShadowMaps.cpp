@@ -282,10 +282,12 @@ int main()
 		}
 		ImGui::End();
 
-		ImGui::SetNextWindowPos(ImVec2(600, 10), ImGuiSetCond_Once);
+		ImGui::SetNextWindowPos(vec2f(600, 10), ImGuiSetCond_Once);
+		ImGui::SetNextWindowSize(vec2f(300), ImGuiSetCond_Once);
 		if (ImGui::Begin("Shadow Map"))
 		{
-			ImGui::Image(GUIManager->GetTextureID(ShadowDepth), vec2f(250));
+			vec2f const AvailableSpace = ImGui::GetContentRegionAvail();
+			ImGui::Image(GUIManager->GetTextureID(ShadowDepth), AvailableSpace);
 		}
 		ImGui::End();
 
