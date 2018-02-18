@@ -89,6 +89,7 @@ int main()
 	CSimpleMesh * CubeMesh = CGeometryCreator::CreateCube();
 
 	SharedPointer<IShader> DiffuseShader = AssetManager->LoadShader("Diffuse");
+	SharedPointer<IShader> ColorShader = AssetManager->LoadShader("Color");
 	SharedPointer<IShader> QuadCopyShader = AssetManager->LoadShader("QuadCopy");
 
 
@@ -120,16 +121,7 @@ int main()
 	Window->AddListener(Controller);
 	TimeManager->MakeUpdateTick(0.02)->AddListener(Controller);
 
-	vec3f LightDirection = vec3f(2, -12, 2);
-	float LightViewSize = 20.f;
-	float LightNear = 110.f;
-	float LightFar = 130.f;
-
-	COrthographicCamera * LightCamera = new COrthographicCamera(-LightViewSize, LightViewSize, -LightViewSize, LightViewSize);
-	LightCamera->SetPosition(-LightDirection * 10.f);
-	LightCamera->SetLookDirection(LightDirection);
-	LightCamera->SetNearPlane(LightNear);
-	LightCamera->SetFarPlane(LightFar);
+	COrthographicCamera * LightCamera = new COrthographicCamera(-1, 1, -1, 1);
 	ShadowPass->SetActiveCamera(LightCamera);
 
 
@@ -200,6 +192,10 @@ int main()
 	ColorPass->AddSceneObject(Plane);
 	ShadowPass->AddSceneObject(Plane);
 
+	CLineSceneObject * Lines = new CLineSceneObject();
+	Lines->SetShader(ColorShader);
+	ColorPass->AddSceneObject(Lines);
+
 	vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("bunny.obj");
 	for (auto Mesh : Meshes)
 	{
@@ -220,14 +216,12 @@ int main()
 	PostProcess->AddSceneObject(PostProcessObject);
 
 	CDirectionalLight * Light1 = new CDirectionalLight();
-	Light1->SetDirection(LightDirection);
 	ColorPass->AddLight(Light1);
 	ShadowPass->AddLight(Light1);
 
 	CSimpleMeshSceneObject * LightSphere = new CSimpleMeshSceneObject();
 	LightSphere->SetMesh(SphereMesh);
 	LightSphere->SetShader(DiffuseShader);
-	LightSphere->SetPosition(LightDirection * -2);
 	LightSphere->SetScale(0.4f);
 	LightSphere->GetMaterial().Ambient = 1.f / 0.75f;
 	LightSphere->GetMaterial().Diffuse = 0;
@@ -247,6 +241,13 @@ int main()
 	// Main Loop //
 	///////////////
 
+	vec3f LightDirection = Normalize( vec3f(2, -12, 2) );
+	float LightViewSize = 20.f;
+	float LightNear = 1.f;
+	float LightFar = 30.f;
+	float LightDistance = 15.f;
+
+
 	TimeManager->Init(WindowManager);
 	while (WindowManager->Run())
 	{
@@ -256,6 +257,7 @@ int main()
 
 		GUIManager->NewFrame();
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiSetCond_Once);
 		if (ImGui::Begin("Settings"))
 		{
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -267,21 +269,65 @@ int main()
 			ImGui::SliderFloat("Light Camera Size", &LightViewSize, 1.f, 200.f);
 			ImGui::SliderFloat("Light Near Plane", &LightNear, 1.f, 300.f);
 			ImGui::SliderFloat("Light Far Plane", &LightFar, 1.f, 600.f);
-			//ImGui::SliderFloat3("Light Direction", LightDirection.Values, -30.f, 30.f);
+
+			ImGui::SliderFloat("Light Camera Distance", &LightDistance, 1.f, 200.f);
 			ImGui::Text("Light Position: %.3f %.3f %.3f", LightCamera->GetPosition().X, LightCamera->GetPosition().Y, LightCamera->GetPosition().Z);
 		}
 		ImGui::End();
+
+		Light1->SetDirection(LightDirection);
+		LightSphere->SetPosition(LightDirection * LightDistance);
 
 		LightCamera->SetLeft(-LightViewSize);
 		LightCamera->SetRight(LightViewSize);
 		LightCamera->SetBottom(-LightViewSize);
 		LightCamera->SetTop(LightViewSize);
-		LightCamera->SetPosition(-LightDirection * 10.f);
+		LightCamera->SetPosition(-LightDirection * LightDistance);
 		LightCamera->SetLookDirection(LightDirection);
 		LightCamera->SetNearPlane(LightNear);
 		LightCamera->SetFarPlane(LightFar);
 		LightCamera->Update();
 		uLightMatrix = LightCamera->GetProjectionMatrix() * LightCamera->GetViewMatrix();
+
+		vec3f const W = - Normalize(LightCamera->GetLookDirecton());
+		vec3f const U = Normalize(Cross(LightCamera->GetUpVector(), W));
+		vec3f const V = Cross(W, U);
+		vec3f const P = LightCamera->GetPosition();
+
+		vec3f Box[8];
+
+		float const BoxSize = LightViewSize;
+		Box[0] = P - U * BoxSize - V * BoxSize - W * LightNear;
+		Box[1] = P + U * BoxSize - V * BoxSize - W * LightNear;
+		Box[2] = P - U * BoxSize + V * BoxSize - W * LightNear;
+		Box[3] = P + U * BoxSize + V * BoxSize - W * LightNear;
+
+		Box[4] = P - U * BoxSize - V * BoxSize - W * LightFar;
+		Box[5] = P + U * BoxSize - V * BoxSize - W * LightFar;
+		Box[6] = P - U * BoxSize + V * BoxSize - W * LightFar;
+		Box[7] = P + U * BoxSize + V * BoxSize - W * LightFar;
+
+		Lines->ResetLines();
+		Lines->AddLine(vec3f(0, 0, 0), P, Color::Basic::Cyan);
+		Lines->AddLine(P, P + U, Color::Basic::Red);
+		Lines->AddLine(P, P + V, Color::Basic::Green);
+		Lines->AddLine(P, P + W, Color::Basic::Blue);
+
+		Lines->AddLine(Box[0], Box[1], Color::Basic::White);
+		Lines->AddLine(Box[0], Box[2], Color::Basic::White);
+		Lines->AddLine(Box[1], Box[3], Color::Basic::White);
+		Lines->AddLine(Box[2], Box[3], Color::Basic::White);
+
+		Lines->AddLine(Box[4], Box[5], Color::Basic::White);
+		Lines->AddLine(Box[4], Box[6], Color::Basic::White);
+		Lines->AddLine(Box[5], Box[7], Color::Basic::White);
+		Lines->AddLine(Box[6], Box[7], Color::Basic::White);
+
+		Lines->AddLine(Box[0], Box[4], Color::Basic::White);
+		Lines->AddLine(Box[1], Box[5], Color::Basic::White);
+		Lines->AddLine(Box[2], Box[6], Color::Basic::White);
+		Lines->AddLine(Box[3], Box[7], Color::Basic::White);
+		//Lines->AddLine(vec3f(0, 0, 0), vec3f(0, 10, 0), Color::Basic::Blue);
 
 		ShadowBuffer->ClearColorAndDepth();
 		BackBuffer->ClearColorAndDepth();
