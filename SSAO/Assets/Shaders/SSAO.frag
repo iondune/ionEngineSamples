@@ -26,13 +26,17 @@ vec3 reconstructViewspacePosition(vec2 texCoords)
 
 void main()
 {
-	vec3 Color = vec3(0.0);
-
 	// Reconstruct viewspace fragment position
 	vec3 fragmentPosition = reconstructViewspacePosition(fTexCoords);
 
 	// Read viewspace fragment normal from gbuffer
-	vec3 normal = texture(tSceneNormals, fTexCoords).rgb;
+	vec3 normal = texture(tSceneNormals, fTexCoords).rgb * 2.0 - vec3(1.0);
+
+	if (normal == vec3(-1.0))
+	{
+		outColor = vec4(0.0, 0.0, 0.0, 1.0);
+		return;
+	}
 
 	// Random vector (to orient hemisphere)
 	const float noiseTexSize = 4.0;
@@ -75,6 +79,7 @@ void main()
 	}
 	occlusion = 1.0 - (occlusion / kernelSize);
 
+	vec3 Color = vec3(0.0);
 	Color = vec3(occlusion);
 	// Color = texture(texNoise, fTexCoords * noiseScale).xyz;
 	// Color = normal * 0.5 + vec3(0.5);

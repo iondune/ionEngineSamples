@@ -20,7 +20,7 @@ layout (location = 1) out vec3 outNormal;
 void main()
 {
 	outColor = uMaterial.DiffuseColor;
-	outNormal = normalize(fNormal);
+	outNormal = normalize(fNormal) * 0.5 + vec3(0.5);
 
 	// Per-face normals
 	vec3 fdx = dFdx(fViewPosition);
