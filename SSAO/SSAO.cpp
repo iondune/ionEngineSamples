@@ -195,16 +195,13 @@ int main()
 	PlaneObject->SetShader(GeometryShader);
 	RenderPass->AddSceneObject(PlaneObject);
 
-	vector<CSimpleMesh *> Meshes = CGeometryCreator::LoadOBJFile("dragon10k.obj");
-	for (auto Mesh : Meshes)
-	{
-		CSimpleMeshSceneObject * MeshObject = new CSimpleMeshSceneObject();
-		MeshObject->SetMesh(Mesh);
-		MeshObject->SetShader(GeometryShader);
-		MeshObject->SetPosition(vec3f(6.f, 1.1f, 4.f));
-		MeshObject->SetScale(4.f);
-		RenderPass->AddSceneObject(MeshObject);
-	}
+	CSimpleMesh * DragonMesh = AssetManager->LoadMeshMerged("dragon10k.obj");
+	CSimpleMeshSceneObject * DragonObject = new CSimpleMeshSceneObject();
+	DragonObject->SetMesh(DragonMesh);
+	DragonObject->SetShader(GeometryShader);
+	DragonObject->SetPosition(vec3f(6.f, 1.1f, 4.f));
+	DragonObject->SetScale(4.f);
+	RenderPass->AddSceneObject(DragonObject);
 
 	CSimpleMesh * StairMesh = AssetManager->LoadMeshMerged("SM_StairCase_02.obj");
 	CSimpleMeshSceneObject * StairObject = new CSimpleMeshSceneObject();
