@@ -198,6 +198,15 @@ int main()
 		RenderPass->AddSceneObject(MeshObject);
 	}
 
+	CSimpleMesh * StairMesh = AssetManager->LoadMeshMerged("SM_StairCase_02.obj");
+	CSimpleMeshSceneObject * StairObject = new CSimpleMeshSceneObject();
+	StairObject->SetMesh(StairMesh);
+	StairObject->SetShader(GeometryShader);
+	StairObject->SetPosition(vec3f(12.f, 0.f, 5.f));
+	StairObject->SetScale(1.f);
+	StairObject->SetRotation(vec3f(0.f, DegToRad(90.f), 0.f));
+	RenderPass->AddSceneObject(StairObject);
+
 	float SSAORadius = 1.0f;
 
 	CSimpleMeshSceneObject * PostProcessObject = new CSimpleMeshSceneObject();
