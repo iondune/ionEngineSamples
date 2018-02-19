@@ -40,7 +40,7 @@ void main()
 	}
 
 	// Random vector (to orient hemisphere)
-	const float noiseTexSize = 4.0;
+	const float noiseTexSize = 64.0;
 	vec2 noiseScale = vec2(textureSize(tSceneDepth, 0)) / noiseTexSize;
 	vec3 randomVec = texture(texNoise, fTexCoords * noiseScale).xyz;
 

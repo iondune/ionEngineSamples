@@ -39,7 +39,8 @@ int main()
 	SceneManager->Init(GraphicsAPI);
 	AssetManager->Init(GraphicsAPI);
 
-	CWindow * Window = WindowManager->CreateWindow(vec2i(1600, 900), "DemoApplication", EWindowType::Windowed);
+	//CWindow * Window = WindowManager->CreateWindow(vec2i(1600, 900), "DemoApplication", EWindowType::Windowed);
+	CWindow * Window = WindowManager->CreateWindowOnMonitor(2, "SSAO");
 
 	GUIManager->Init(Window);
 	Window->AddListener(GUIManager);
@@ -106,7 +107,7 @@ int main()
 
 	// Noise texture
 	std::vector<float> NoiseData;
-	uint const NoiseTexSize = 4;
+	uint const NoiseTexSize = 64;
 	for (uint i = 0; i < NoiseTexSize * NoiseTexSize; i++)
 	{
 		NoiseData.push_back(randomFloats(generator) * 2 - 1);
