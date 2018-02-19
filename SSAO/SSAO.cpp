@@ -130,7 +130,7 @@ int main()
 	SceneManager->AddRenderPass(PostProcess);
 
 	CPerspectiveCamera * Camera = new CPerspectiveCamera(Window->GetAspectRatio());
-	Camera->SetPosition(vec3f(0, 3, -5));
+	Camera->SetPosition(vec3f(-1.7f, 2.8f, 3.4f));
 	Camera->SetFocalLength(0.4f);
 	Camera->SetNearPlane(0.1f);
 	Camera->SetFarPlane(50.f);
@@ -138,8 +138,8 @@ int main()
 	PostProcess->SetActiveCamera(Camera);
 
 	CCameraController * Controller = new CCameraController(Camera);
-	Controller->SetTheta(15.f * Constants32::Pi / 48.f);
-	Controller->SetPhi(-Constants32::Pi / 16.f);
+	Controller->SetTheta(-0.08f);
+	Controller->SetPhi(-0.26f);
 	Window->AddListener(Controller);
 	TimeManager->MakeUpdateTick(0.02)->AddListener(Controller);
 
