@@ -94,7 +94,15 @@ int main()
 	{
 		float const VerticalBias = 0.1f;
 
-		vec3f sample = vec3f(randomFloats(generator) * 2 - 1, randomFloats(generator) * 2 - 1, randomFloats(generator) * (1.f - VerticalBias) + VerticalBias);
+		bool random = true;
+
+		int const sampleRegionWidth = (int) sqrt((float) numSamples);
+
+		float const a = random ? randomFloats(generator) : (float) (i / sampleRegionWidth) / (float) (sampleRegionWidth - 1);
+		float const b = random ? randomFloats(generator) : (float) (i % sampleRegionWidth) / (float) (sampleRegionWidth - 1);
+		float const c = random ? randomFloats(generator) : (float) (i % 3) / 2.f;
+
+		vec3f sample = vec3f(a * 2 - 1, b * 2 - 1, c * (1.f - VerticalBias) + VerticalBias);
 		sample.Normalize();
 		sample *= randomFloats(generator);
 		float scale = float(i) / numSamples;
