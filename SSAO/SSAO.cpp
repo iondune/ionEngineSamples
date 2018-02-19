@@ -58,7 +58,7 @@ int main()
 	SceneColor->SetMinFilter(ITexture::EFilter::Nearest);
 	SceneColor->SetMagFilter(ITexture::EFilter::Nearest);
 	SceneColor->SetWrapMode(ITexture::EWrapMode::Clamp);
-	SharedPointer<ITexture2D> SceneNormal = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float32);
+	SharedPointer<ITexture2D> SceneNormal = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float16);
 	SceneNormal->SetMinFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetMagFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetWrapMode(ITexture::EWrapMode::Clamp);
