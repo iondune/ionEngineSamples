@@ -13,6 +13,7 @@ uniform sampler2D texNoise;
 uniform float radius;
 
 const int kernelSize = 64;
+const int noiseTexSize = 32;
 uniform vec3 samples[kernelSize];
 
 
@@ -40,8 +41,7 @@ void main()
 	}
 
 	// Random vector (to orient hemisphere)
-	const float noiseTexSize = 64.0;
-	vec2 noiseScale = vec2(textureSize(tSceneDepth, 0)) / noiseTexSize;
+	vec2 noiseScale = vec2(textureSize(tSceneDepth, 0)) / float(noiseTexSize);
 	vec3 randomVec = texture(texNoise, fTexCoords * noiseScale).xyz;
 
 	// Tangent to view transform
