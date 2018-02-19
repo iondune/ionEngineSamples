@@ -53,7 +53,7 @@ int main()
 	SharedPointer<IRenderTarget> BackBuffer = Context->GetBackBuffer();
 	BackBuffer->SetClearColor(color3f(0.3f));
 
-	SharedPointer<IFrameBuffer> FrameBuffer = Context->CreateFrameBuffer();
+	SharedPointer<IFrameBuffer> SceneFrameBuffer = Context->CreateFrameBuffer();
 
 	SharedPointer<ITexture2D> SceneColor = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Fix8);
 	SceneColor->SetMinFilter(ITexture::EFilter::Nearest);
@@ -64,10 +64,34 @@ int main()
 	SceneNormal->SetMagFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetWrapMode(ITexture::EWrapMode::Clamp);
 	SharedPointer<ITexture2D> SceneDepth = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::R, ITexture::EInternalFormatType::Depth);
-	FrameBuffer->AttachColorTexture(SceneColor, 0);
-	FrameBuffer->AttachColorTexture(SceneNormal, 1);
-	FrameBuffer->AttachDepthTexture(SceneDepth);
-	if (! FrameBuffer->CheckCorrectness())
+	SceneFrameBuffer->AttachColorTexture(SceneColor, 0);
+	SceneFrameBuffer->AttachColorTexture(SceneNormal, 1);
+	SceneFrameBuffer->AttachDepthTexture(SceneDepth);
+	if (! SceneFrameBuffer->CheckCorrectness())
+	{
+		Log::Error("Frame buffer not valid!");
+	}
+
+	SharedPointer<IFrameBuffer> PingFrameBuffer = Context->CreateFrameBuffer();
+
+	SharedPointer<ITexture2D> PingColor = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Fix8);
+	PingColor->SetMinFilter(ITexture::EFilter::Nearest);
+	PingColor->SetMagFilter(ITexture::EFilter::Nearest);
+	PingColor->SetWrapMode(ITexture::EWrapMode::Clamp);
+	PingFrameBuffer->AttachColorTexture(PingColor, 0);
+	if (! PingFrameBuffer->CheckCorrectness())
+	{
+		Log::Error("Frame buffer not valid!");
+	}
+
+	SharedPointer<IFrameBuffer> PongFrameBuffer = Context->CreateFrameBuffer();
+
+	SharedPointer<ITexture2D> PongColor = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Fix8);
+	PongColor->SetMinFilter(ITexture::EFilter::Nearest);
+	PongColor->SetMagFilter(ITexture::EFilter::Nearest);
+	PongColor->SetWrapMode(ITexture::EWrapMode::Clamp);
+	PongFrameBuffer->AttachColorTexture(PongColor, 0);
+	if (! PongFrameBuffer->CheckCorrectness())
 	{
 		Log::Error("Frame buffer not valid!");
 	}
@@ -81,7 +105,8 @@ int main()
 
 	SharedPointer<IShader> GeometryShader = AssetManager->LoadShader("Geometry");
 	SharedPointer<IShader> SSAOShader = AssetManager->LoadShader("SSAO");
-	SharedPointer<IShader> QuadCopyShader = AssetManager->LoadShader("QuadCopy");
+	SharedPointer<IShader> BlurHShader = AssetManager->LoadShader("BlurH");
+	SharedPointer<IShader> BlurVShader = AssetManager->LoadShader("BlurV");
 
 
 	std::uniform_real_distribution<float> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
@@ -133,12 +158,29 @@ int main()
 	////////////////////
 
 	CRenderPass * RenderPass = new CRenderPass(Context);
-	RenderPass->SetRenderTarget(FrameBuffer);
+	RenderPass->SetRenderTarget(SceneFrameBuffer);
 	SceneManager->AddRenderPass(RenderPass);
 
-	CRenderPass * PostProcess = new CRenderPass(Context);
-	PostProcess->SetRenderTarget(BackBuffer);
-	SceneManager->AddRenderPass(PostProcess);
+	CRenderPass * SSAOPass = new CRenderPass(Context);
+	SSAOPass->SetRenderTarget(PingFrameBuffer);
+	SceneManager->AddRenderPass(SSAOPass);
+
+	int const BlurPasses = 2;
+
+	CRenderPass * BlurHPasses[BlurPasses] =  { nullptr };
+	CRenderPass * BlurVPasses[BlurPasses] =  { nullptr };
+
+	for (int i = 0; i < BlurPasses; ++ i)
+	{
+		BlurHPasses[i] = new CRenderPass(Context);
+		BlurHPasses[i]->SetRenderTarget(PongFrameBuffer);
+		SceneManager->AddRenderPass(BlurHPasses[i]);
+
+		BlurVPasses[i] = new CRenderPass(Context);
+		BlurVPasses[i]->SetRenderTarget(i + 1 == BlurPasses ? BackBuffer : PingFrameBuffer);
+		SceneManager->AddRenderPass(BlurVPasses[i]);
+	}
+	
 
 	CPerspectiveCamera * Camera = new CPerspectiveCamera(Window->GetAspectRatio());
 	Camera->SetPosition(vec3f(-1.7f, 2.8f, 3.4f));
@@ -146,7 +188,7 @@ int main()
 	Camera->SetNearPlane(0.1f);
 	Camera->SetFarPlane(50.f);
 	RenderPass->SetActiveCamera(Camera);
-	PostProcess->SetActiveCamera(Camera);
+	SSAOPass->SetActiveCamera(Camera);
 
 	CCameraController * Controller = new CCameraController(Camera);
 	Controller->SetTheta(-0.08f);
@@ -222,7 +264,28 @@ int main()
 	PostProcessObject->SetTexture("texNoise", SSAONoise);
 	PostProcessObject->SetUniform("samples[0]", CUniform<vector<vec3f>>(ssaoKernel));
 	PostProcessObject->SetUniform("radius", std::make_shared<CUniformReference<float>>(&SSAORadius));
-	PostProcess->AddSceneObject(PostProcessObject);
+	SSAOPass->AddSceneObject(PostProcessObject);
+
+	CUniform<bool> uDoBlur = true;
+
+	for (int i = 0; i < BlurPasses; ++ i)
+	{
+		CSimpleMeshSceneObject * BlurHObject = new CSimpleMeshSceneObject();
+		BlurHObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
+		BlurHObject->SetShader(BlurHShader);
+		BlurHObject->SetTexture("uTexture", PingColor);
+		BlurHObject->SetTexture("tSceneNormals", SceneNormal);
+		BlurHObject->SetUniform("uDoBlur", uDoBlur);
+		BlurHPasses[i]->AddSceneObject(BlurHObject);
+
+		CSimpleMeshSceneObject * BlurVObject = new CSimpleMeshSceneObject();
+		BlurVObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
+		BlurVObject->SetShader(BlurVShader);
+		BlurVObject->SetTexture("uTexture", PongColor);
+		BlurVObject->SetTexture("tSceneNormals", SceneNormal);
+		BlurVObject->SetUniform("uDoBlur", uDoBlur);
+		BlurVPasses[i]->AddSceneObject(BlurVObject);
+	}
 
 	CPointLight * Light1 = new CPointLight();
 	Light1->SetPosition(vec3f(0, 6, 0));
@@ -249,11 +312,12 @@ int main()
 			ImGui::Separator();
 
 			ImGui::SliderFloat("SSAO Radius", &SSAORadius, 0.1f, 20.f);
+			ImGui::Checkbox("Do Blur", &uDoBlur.Get());
 
 			ImGui::End();
 		}
 
-		FrameBuffer->ClearColorAndDepth();
+		SceneFrameBuffer->ClearColorAndDepth();
 		BackBuffer->ClearColorAndDepth();
 		SceneManager->DrawAll();
 		GUIManager->Draw();
