@@ -66,11 +66,11 @@ int main()
 	SceneNormal->SetMinFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetMagFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetWrapMode(ITexture::EWrapMode::Clamp);
-	SharedPointer<IDepthBuffer> SceneDepth = GraphicsAPI->CreateDepthBuffer(Window->GetSize());
+	SharedPointer<ITexture2D> SceneDepth = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::R, ITexture::EInternalFormatType::Depth);
 	FrameBuffer->AttachColorTexture(SceneColor, 0);
 	FrameBuffer->AttachColorTexture(ScenePosition, 1);
 	FrameBuffer->AttachColorTexture(SceneNormal, 2);
-	FrameBuffer->AttachDepthBuffer(SceneDepth);
+	FrameBuffer->AttachDepthTexture(SceneDepth);
 	if (! FrameBuffer->CheckCorrectness())
 	{
 		Log::Error("Frame buffer not valid!");
@@ -208,6 +208,7 @@ int main()
 	PostProcessObject->SetTexture("gPositionDepth", ScenePosition);
 	PostProcessObject->SetTexture("gNormal", SceneNormal);
 	PostProcessObject->SetTexture("gPositionDepth", ScenePosition);
+	PostProcessObject->SetTexture("tSceneDepth", SceneDepth);
 	PostProcessObject->SetTexture("texNoise", SSAONoise);
 	PostProcessObject->SetUniform("uTanHalfFOV", CUniform<float>(Tan(Camera->GetFieldOfView() / 2.f)));
 	PostProcessObject->SetUniform("uAspectRatio", CUniform<float>(Window->GetAspectRatio()));

@@ -6,6 +6,7 @@ in vec2 fTexCoords;
 
 uniform sampler2D gPositionDepth;
 uniform sampler2D gNormal;
+uniform sampler2D tSceneDepth;
 uniform sampler2D texNoise;
 
 uniform vec3 samples[64];
@@ -16,16 +17,26 @@ uniform float radius;
 
 uniform mat4 uProjectionMatrix;
 
+vec3 reconstructViewspacePosition(vec2 texCoords)
+{
+	float depth = texture(tSceneDepth, texCoords).r;
+	vec3 ndc = vec3(texCoords, depth) * 2.0 - vec3(1.0);
+	vec4 view = inverse(uProjectionMatrix) * vec4(ndc, 1.0);
+	return view.xyz / view.w;
+}
+
 void main()
 {
 	vec3 Color = vec3(0.0);
 
-	// Read from gbuffer
-	vec3 fragPos = texture(gPositionDepth, fTexCoords).xyz;
+	// Reconstruct viewspace fragment position
+	vec3 fragmentPosition = reconstructViewspacePosition(fTexCoords);
+
+	// Read viewspace fragment normal from gbuffer
 	vec3 normal = texture(gNormal, fTexCoords).rgb;
 
 	// Random vector (to orient hemisphere)
-	const float noiseTexSize = 4.0f;
+	const float noiseTexSize = 4.0;
 	vec2 noiseScale = vec2(textureSize(gPositionDepth, 0)) / noiseTexSize;
 	vec3 randomVec = texture(texNoise, fTexCoords * noiseScale).xyz;
 
@@ -39,7 +50,7 @@ void main()
 	for(int i = 0; i < kernelSize; ++i)
 	{
 		// Sample position in in view space
-		vec3 sample = fragPos + (TBN * samples[i]) * radius;
+		vec3 sample = fragmentPosition + (TBN * samples[i]) * radius;
 
 		// Transform sample to NDC
 		vec4 offset = vec4(sample, 1.0);
@@ -52,19 +63,14 @@ void main()
 			continue; // skip samples outside of framebuffer
 		}
 
-		// get sample depth
-		float sampleDepth = -texture(gPositionDepth, offset.xy).w; // Get depth value of kernel sample
+		vec3 samplePosition = reconstructViewspacePosition(offset.xy);
 
-		if (sampleDepth == 0.0)
+		if (samplePosition.z >= sample.z) // check for crevice
 		{
-			continue; // because we have no skybox, skip the fragments from depth clear
-		}
-
-		if (sampleDepth >= sample.z) // check for crevice
-		{
-			if (abs(fragPos.z - sampleDepth) < radius)
+			if (abs(fragmentPosition.z - samplePosition.z) < radius) // check within radius
 			{
-				occlusion += smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth ));
+				float rangeFactor = smoothstep(0.0, 1.0, radius / abs(fragmentPosition.z - samplePosition.z));
+				occlusion += rangeFactor;
 			}
 		}
 	}
