@@ -4,17 +4,17 @@
 out vec4 outColor;
 in vec2 fTexCoords;
 
+uniform mat4 uProjectionMatrix;
+
 uniform sampler2D tSceneNormals;
 uniform sampler2D tSceneDepth;
 uniform sampler2D texNoise;
 
-uniform vec3 samples[64];
-
-const int kernelSize = 64;
 uniform float radius;
 
+const int kernelSize = 64;
+uniform vec3 samples[kernelSize];
 
-uniform mat4 uProjectionMatrix;
 
 vec3 reconstructViewspacePosition(vec2 texCoords)
 {
@@ -32,6 +32,7 @@ void main()
 	// Read viewspace fragment normal from gbuffer
 	vec3 normal = texture(tSceneNormals, fTexCoords).rgb * 2.0 - vec3(1.0);
 
+	// Early exit - uninitialized normals (i.e. cleared depth)
 	if (normal == vec3(-1.0))
 	{
 		outColor = vec4(0.0, 0.0, 0.0, 1.0);
@@ -52,10 +53,10 @@ void main()
 	float occlusion = 0.0;
 	for(int i = 0; i < kernelSize; ++i)
 	{
-		// Sample position in in view space
+		// Sample position in view space
 		vec3 sample = fragmentPosition + (TBN * samples[i]) * radius;
 
-		// Transform sample to NDC
+		// Transform sample to NDC (get texture coordinates)
 		vec4 offset = vec4(sample, 1.0);
 		offset = uProjectionMatrix * offset; // view to clip-space
 		offset.xy /= offset.w; // clip to ndc

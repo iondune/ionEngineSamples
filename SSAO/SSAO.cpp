@@ -205,8 +205,6 @@ int main()
 	PostProcessObject->SetTexture("tSceneNormals", SceneNormal);
 	PostProcessObject->SetTexture("tSceneDepth", SceneDepth);
 	PostProcessObject->SetTexture("texNoise", SSAONoise);
-	PostProcessObject->SetUniform("uTanHalfFOV", CUniform<float>(Tan(Camera->GetFieldOfView() / 2.f)));
-	PostProcessObject->SetUniform("uAspectRatio", CUniform<float>(Window->GetAspectRatio()));
 	PostProcessObject->SetUniform("samples[0]", CUniform<vector<vec3f>>(ssaoKernel));
 	PostProcessObject->SetUniform("radius", std::make_shared<CUniformReference<float>>(&SSAORadius));
 	PostProcess->AddSceneObject(PostProcessObject);
