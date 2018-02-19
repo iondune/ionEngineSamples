@@ -10,14 +10,14 @@ uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 
 out vec3 fNormal;
-out vec3 fPosition;
+out vec3 fViewPosition;
 
 
 void main()
 {
 	vec4 Position = uViewMatrix * uModelMatrix * vec4(vPosition, 1.0);
+	fViewPosition = Position.xyz;
 
-	fPosition = Position.xyz;
 	fNormal = normalize(transpose(inverse(mat3(uViewMatrix * uModelMatrix))) * vNormal);
 
 	gl_Position = uProjectionMatrix * Position;

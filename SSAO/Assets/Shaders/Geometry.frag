@@ -10,26 +10,20 @@ struct SMaterial
 };
 
 in vec3 fNormal;
-in vec3 fPosition;
+in vec3 fViewPosition;
 
 uniform SMaterial uMaterial;
 
 layout (location = 0) out vec3 outColor;
-layout (location = 1) out vec4 outPosition;
-layout (location = 2) out vec3 outNormal;
-
-const float NEAR = 0.1; // projection matrix's near plane
-const float FAR = 50.0; // projection matrix's far plane
-float LinearizeDepth(float depth)
-{
-	float z = depth * 2.0 - 1.0; // Back to NDC
-	return (2.0 * NEAR * FAR) / (FAR + NEAR - z * (FAR - NEAR));
-}
+layout (location = 1) out vec3 outNormal;
 
 void main()
 {
 	outColor = uMaterial.DiffuseColor;
-	outPosition.xyz = fPosition;
-	outPosition.a = LinearizeDepth(gl_FragCoord.z);
 	outNormal = normalize(fNormal);
+
+	// Per-face normals
+	vec3 fdx = dFdx(fViewPosition);
+	vec3 fdy = dFdy(fViewPosition);
+	// outNormal = normalize(cross(fdx, fdy));
 }

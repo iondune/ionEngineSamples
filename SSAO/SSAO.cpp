@@ -58,18 +58,13 @@ int main()
 	SceneColor->SetMinFilter(ITexture::EFilter::Nearest);
 	SceneColor->SetMagFilter(ITexture::EFilter::Nearest);
 	SceneColor->SetWrapMode(ITexture::EWrapMode::Clamp);
-	SharedPointer<ITexture2D> ScenePosition = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Float16);
-	ScenePosition->SetMinFilter(ITexture::EFilter::Nearest);
-	ScenePosition->SetMagFilter(ITexture::EFilter::Nearest);
-	ScenePosition->SetWrapMode(ITexture::EWrapMode::Clamp);
-	SharedPointer<ITexture2D> SceneNormal = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float16);
+	SharedPointer<ITexture2D> SceneNormal = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGB, ITexture::EInternalFormatType::Float32);
 	SceneNormal->SetMinFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetMagFilter(ITexture::EFilter::Nearest);
 	SceneNormal->SetWrapMode(ITexture::EWrapMode::Clamp);
 	SharedPointer<ITexture2D> SceneDepth = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::R, ITexture::EInternalFormatType::Depth);
 	FrameBuffer->AttachColorTexture(SceneColor, 0);
-	FrameBuffer->AttachColorTexture(ScenePosition, 1);
-	FrameBuffer->AttachColorTexture(SceneNormal, 2);
+	FrameBuffer->AttachColorTexture(SceneNormal, 1);
 	FrameBuffer->AttachDepthTexture(SceneDepth);
 	if (! FrameBuffer->CheckCorrectness())
 	{
@@ -205,9 +200,7 @@ int main()
 	CSimpleMeshSceneObject * PostProcessObject = new CSimpleMeshSceneObject();
 	PostProcessObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
 	PostProcessObject->SetShader(SSAOShader);
-	PostProcessObject->SetTexture("gPositionDepth", ScenePosition);
-	PostProcessObject->SetTexture("gNormal", SceneNormal);
-	PostProcessObject->SetTexture("gPositionDepth", ScenePosition);
+	PostProcessObject->SetTexture("tSceneNormals", SceneNormal);
 	PostProcessObject->SetTexture("tSceneDepth", SceneDepth);
 	PostProcessObject->SetTexture("texNoise", SSAONoise);
 	PostProcessObject->SetUniform("uTanHalfFOV", CUniform<float>(Tan(Camera->GetFieldOfView() / 2.f)));

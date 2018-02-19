@@ -4,8 +4,7 @@
 out vec4 outColor;
 in vec2 fTexCoords;
 
-uniform sampler2D gPositionDepth;
-uniform sampler2D gNormal;
+uniform sampler2D tSceneNormals;
 uniform sampler2D tSceneDepth;
 uniform sampler2D texNoise;
 
@@ -33,11 +32,11 @@ void main()
 	vec3 fragmentPosition = reconstructViewspacePosition(fTexCoords);
 
 	// Read viewspace fragment normal from gbuffer
-	vec3 normal = texture(gNormal, fTexCoords).rgb;
+	vec3 normal = texture(tSceneNormals, fTexCoords).rgb;
 
 	// Random vector (to orient hemisphere)
 	const float noiseTexSize = 4.0;
-	vec2 noiseScale = vec2(textureSize(gPositionDepth, 0)) / noiseTexSize;
+	vec2 noiseScale = vec2(textureSize(tSceneDepth, 0)) / noiseTexSize;
 	vec3 randomVec = texture(texNoise, fTexCoords * noiseScale).xyz;
 
 	// Tangent to view transform
