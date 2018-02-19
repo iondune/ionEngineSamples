@@ -267,6 +267,8 @@ int main()
 	SSAOPass->AddSceneObject(PostProcessObject);
 
 	CUniform<bool> uDoBlur = true;
+	CUniform<bool> uUnconstrained = false;
+	CUniform<float> uNormalThreshold = 0.5f;
 
 	for (int i = 0; i < BlurPasses; ++ i)
 	{
@@ -276,6 +278,8 @@ int main()
 		BlurHObject->SetTexture("uTexture", PingColor);
 		BlurHObject->SetTexture("tSceneNormals", SceneNormal);
 		BlurHObject->SetUniform("uDoBlur", uDoBlur);
+		BlurHObject->SetUniform("uUnconstrained", uUnconstrained);
+		BlurHObject->SetUniform("uNormalThreshold", uNormalThreshold);
 		BlurHPasses[i]->AddSceneObject(BlurHObject);
 
 		CSimpleMeshSceneObject * BlurVObject = new CSimpleMeshSceneObject();
@@ -284,6 +288,8 @@ int main()
 		BlurVObject->SetTexture("uTexture", PongColor);
 		BlurVObject->SetTexture("tSceneNormals", SceneNormal);
 		BlurVObject->SetUniform("uDoBlur", uDoBlur);
+		BlurVObject->SetUniform("uUnconstrained", uUnconstrained);
+		BlurVObject->SetUniform("uNormalThreshold", uNormalThreshold);
 		BlurVPasses[i]->AddSceneObject(BlurVObject);
 	}
 
@@ -313,6 +319,9 @@ int main()
 
 			ImGui::SliderFloat("SSAO Radius", &SSAORadius, 0.1f, 20.f);
 			ImGui::Checkbox("Do Blur", &uDoBlur.Get());
+			ImGui::SameLine();
+			ImGui::Checkbox("Unconstrained", &uUnconstrained.Get());
+			ImGui::SliderFloat("Normal Threshold", &uNormalThreshold.Get(), -1.f, 1.f);
 
 			ImGui::End();
 		}

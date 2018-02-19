@@ -6,6 +6,8 @@ in vec2 fTexCoords;
 uniform sampler2D uTexture;
 uniform sampler2D tSceneNormals;
 uniform bool uDoBlur;
+uniform bool uUnconstrained;
+uniform float uNormalThreshold;
 
 out vec4 outColor;
 
@@ -29,14 +31,12 @@ void main()
 		{
 			vec2 off = vec2(0.0, offset[i]) / textureSize;
 
-			const float normalThreshold = 0.5;
-
-			if (dot(texture(tSceneNormals, fTexCoords + off).rgb * 2.0 - vec3(1.0), normal) > normalThreshold)
+			if (uUnconstrained || dot(texture(tSceneNormals, fTexCoords + off).rgb * 2.0 - vec3(1.0), normal) > uNormalThreshold)
 			{
 				outColor.rgb += texture(uTexture, fTexCoords + off).rgb * weight[i];
 				weights += weight[i];
 			}
-			if (dot(texture(tSceneNormals, fTexCoords - off).rgb * 2.0 - vec3(1.0), normal) > normalThreshold)
+			if (uUnconstrained || dot(texture(tSceneNormals, fTexCoords - off).rgb * 2.0 - vec3(1.0), normal) > uNormalThreshold)
 			{
 				outColor.rgb += texture(uTexture, fTexCoords - off).rgb * weight[i];
 				weights += weight[i];
