@@ -73,12 +73,11 @@ void main()
 		{
 			if (abs(fragmentPosition.z - samplePosition.z) < radius) // check within radius
 			{
-				float rangeFactor = smoothstep(0.0, 1.0, radius / abs(fragmentPosition.z - samplePosition.z));
-				occlusion += rangeFactor;
+				occlusion += 1.0;
 			}
 		}
 	}
-	occlusion = 1.0 - (occlusion / kernelSize);
+	occlusion = 1.0 - (occlusion / float(kernelSize));
 
 	vec3 Color = vec3(0.0);
 	Color = vec3(occlusion);
