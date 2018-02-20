@@ -69,14 +69,15 @@ void main()
 
 		vec3 samplePosition = reconstructViewspacePosition(offset.xy);
 
-		if (samplePosition.z >= sample.z) // check for crevice
+		if (samplePosition.z >= sample.z) // check for crevice - occlusion check
 		{
-			if (abs(fragmentPosition.z - samplePosition.z) < radius) // check within radius
+			if (abs(fragmentPosition.z - samplePosition.z) < radius) // check within radius - range check
 			{
-				occlusion += 1.0;
+				occlusion += 1.0; // distance weight governed by sample distribution
 			}
 		}
 	}
+
 	occlusion = 1.0 - (occlusion / float(kernelSize));
 
 	vec3 Color = vec3(0.0);
