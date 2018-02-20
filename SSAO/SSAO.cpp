@@ -140,7 +140,7 @@ int main()
 
 	// Noise texture
 	std::vector<float> NoiseData;
-	uint const NoiseTexSize = 32;
+	uint const NoiseTexSize = 4;
 	for (uint i = 0; i < NoiseTexSize * NoiseTexSize; i++)
 	{
 		NoiseData.push_back(randomFloats(generator) * 2 - 1);

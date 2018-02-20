@@ -13,7 +13,7 @@ uniform sampler2D texNoise;
 uniform float radius;
 
 const int kernelSize = 64;
-const int noiseTexSize = 32;
+const int noiseTexSize = 4;
 uniform vec3 samples[kernelSize];
 
 
