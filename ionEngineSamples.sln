@@ -13,7 +13,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Billboards", "Billboards\Bi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeometryClipmaps", "GeometryClipmaps\GeometryClipmaps.vcxproj", "{A167B943-9CF8-4BA9-841A-ED8B2CF5A66A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FrameBuffers", "FrameBuffers\FrameBuffers.vcxproj", "{BD0E6116-73CE-4F81-94E8-3B82FEB323AE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FXAA", "FXAA\FXAA.vcxproj", "{BD0E6116-73CE-4F81-94E8-3B82FEB323AE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSAO", "SSAO\SSAO.vcxproj", "{C4EE1B0B-F03D-47C7-980A-65AC4E85D2B1}"
 EndProject
