@@ -3,12 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoadOBJ", "LoadOBJ\LoadOBJ.vcxproj", "{C324FD79-1039-4A24-985B-68BD054876E2}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderVariableNaming", "ShaderVariableNaming\ShaderVariableNaming.vcxproj", "{C324FD79-1039-4A24-985B-68BD054876E3}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LineRendering", "LineRendering\LineRendering.vcxproj", "{224755CB-82F1-4027-80CD-AC5B9B99E635}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Billboards", "Billboards\Billboards.vcxproj", "{C42AAB8A-51C3-4F9D-A854-B06A9E0BC7ED}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeometryClipmaps", "GeometryClipmaps\GeometryClipmaps.vcxproj", "{A167B943-9CF8-4BA9-841A-ED8B2CF5A66A}"
@@ -25,18 +19,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C324FD79-1039-4A24-985B-68BD054876E2}.Debug|x64.ActiveCfg = Debug|x64
-		{C324FD79-1039-4A24-985B-68BD054876E2}.Debug|x64.Build.0 = Debug|x64
-		{C324FD79-1039-4A24-985B-68BD054876E2}.Release|x64.ActiveCfg = Release|x64
-		{C324FD79-1039-4A24-985B-68BD054876E2}.Release|x64.Build.0 = Release|x64
-		{C324FD79-1039-4A24-985B-68BD054876E3}.Debug|x64.ActiveCfg = Debug|x64
-		{C324FD79-1039-4A24-985B-68BD054876E3}.Debug|x64.Build.0 = Debug|x64
-		{C324FD79-1039-4A24-985B-68BD054876E3}.Release|x64.ActiveCfg = Release|x64
-		{C324FD79-1039-4A24-985B-68BD054876E3}.Release|x64.Build.0 = Release|x64
-		{224755CB-82F1-4027-80CD-AC5B9B99E635}.Debug|x64.ActiveCfg = Debug|x64
-		{224755CB-82F1-4027-80CD-AC5B9B99E635}.Debug|x64.Build.0 = Debug|x64
-		{224755CB-82F1-4027-80CD-AC5B9B99E635}.Release|x64.ActiveCfg = Release|x64
-		{224755CB-82F1-4027-80CD-AC5B9B99E635}.Release|x64.Build.0 = Release|x64
 		{C42AAB8A-51C3-4F9D-A854-B06A9E0BC7ED}.Debug|x64.ActiveCfg = Debug|x64
 		{C42AAB8A-51C3-4F9D-A854-B06A9E0BC7ED}.Debug|x64.Build.0 = Debug|x64
 		{C42AAB8A-51C3-4F9D-A854-B06A9E0BC7ED}.Release|x64.ActiveCfg = Release|x64
