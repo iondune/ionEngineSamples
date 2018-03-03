@@ -20,7 +20,9 @@ namespace ion
 			vector<float> Data;
 			size_t DataIndex = 0;
 
-			Data.resize(Vertices.size() * 15);
+			const int numJoints = 4;
+
+			Data.resize(Vertices.size() * (11 + numJoints * 2));
 			for (auto it = Vertices.begin(); it != Vertices.end(); ++ it)
 			{
 				for (uint j = 0; j < 3; ++ j)
@@ -35,13 +37,14 @@ namespace ion
 				for (uint j = 0; j < 2; ++ j)
 					Data[DataIndex++] = it->TextureCoordinates[j];
 
-				for (uint j = 0; j < 2; ++ j)
+
+				for (uint j = 0; j < numJoints; ++ j)
 					Data[DataIndex++] = ((it->Bones.size() > j) ? it->Bones[j].Weight : 0.f);
 
-				for (uint j = 0; j < 2; ++ j)
+				for (uint j = 0; j < numJoints; ++ j)
 					Data[DataIndex++] = (float) ((it->Bones.size() > j) ? it->Bones[j].Index : -1);
 
-				if (it->Bones.size() > 2)
+				if (it->Bones.size() > numJoints)
 				{
 					Log::Warn("Vertex in mesh has more than two bone weights = %d", it->Bones.size());
 				}
@@ -54,8 +57,8 @@ namespace ion
 				{ "vNormal",       3, Graphics::EAttributeType::Float },
 				{ "vColor",        3, Graphics::EAttributeType::Float },
 				{ "vTexCoords",    2, Graphics::EAttributeType::Float },
-				{ "vBoneWeights",  2, Graphics::EAttributeType::Float },
-				{ "vBoneIndices",  2, Graphics::EAttributeType::Float },
+				{ "vBoneWeights",  numJoints, Graphics::EAttributeType::Float },
+				{ "vBoneIndices",  numJoints, Graphics::EAttributeType::Float },
 			};
 			VertexBuffer->SetInputLayout(InputLayout, ION_ARRAYSIZE(InputLayout));
 		}

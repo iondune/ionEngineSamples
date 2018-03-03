@@ -4,8 +4,8 @@
 in vec3 vPosition;
 in vec3 vNormal;
 in vec2 vTexCoords;
-in vec2 vBoneWeights;
-in vec2 vBoneIndices;
+in vec4 vBoneWeights;
+in vec4 vBoneIndices;
 
 #define JOINT_MAX 32
 uniform mat4 uSkinningMatrix[JOINT_MAX];
@@ -25,16 +25,18 @@ out vec3 fDebugColor;
 out vec2 fTexCoords;
 
 
-mat4 MakeSkinningMatrix(vec2 boneWeights0, vec2 boneIndices0)
+mat4 MakeSkinningMatrix(vec4 boneWeights0, ivec4 boneIndices0)
 {
-	mat4 result = boneWeights0.x * uSkinningMatrix[int(boneIndices0.x)];
-	result = result + boneWeights0.y * uSkinningMatrix[int(boneIndices0.y)];
+	mat4 result = boneWeights0.x * uSkinningMatrix[boneIndices0.x];
+	result = result + boneWeights0.y * uSkinningMatrix[boneIndices0.y];
+	result = result + boneWeights0.z * uSkinningMatrix[boneIndices0.z];
+	result = result + boneWeights0.w * uSkinningMatrix[boneIndices0.w];
 	return result;
 }
 
 void main()
 {
-	mat4 SkinningMatrix = MakeSkinningMatrix(vBoneWeights, vBoneIndices);
+	mat4 SkinningMatrix = MakeSkinningMatrix(vBoneWeights, ivec4(vBoneIndices));
 
 	if (! uDebugDoSkin)
 	{
@@ -53,11 +55,19 @@ void main()
 		{
 			fDebugColor.gb = vec2(vBoneWeights.y);
 		}
+		else if (int(vBoneIndices.z) == uDebugWeightSelector)
+		{
+			fDebugColor.gb = vec2(vBoneWeights.z);
+		}
+		else if (int(vBoneIndices.w) == uDebugWeightSelector)
+		{
+			fDebugColor.gb = vec2(vBoneWeights.w);
+		}
 	}
 
 	if (uDebugShowWeightsByVertex)
 	{
-		fDebugColor.rg = vBoneWeights;
+		fDebugColor.rgb = vBoneWeights.rgb;
 	}
 
 	gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * SkinningMatrix * vec4(vPosition, 1.0);
