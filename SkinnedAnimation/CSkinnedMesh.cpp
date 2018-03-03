@@ -15,18 +15,6 @@ namespace ion
 		return AbsoluteTransform;
 	}
 
-	glm::mat4 CSkinnedMesh::CJoint::GetAbsoluteTransformBasis() const
-	{
-		glm::mat4 Absolute = RelativeTransform;
-
-		if (Parent)
-		{
-			Absolute = Parent->GetAbsoluteTransform() * Absolute;
-		}
-
-		return Absolute;
-	}
-
 
 	CSkinnedMesh::CSkinnedMesh()
 	{}

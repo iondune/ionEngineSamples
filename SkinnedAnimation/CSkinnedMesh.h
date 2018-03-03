@@ -33,7 +33,6 @@ namespace ion
 
 			glm::mat4 * SkinningMatrix = nullptr;
 			glm::mat4 GetAbsoluteTransform() const;
-			glm::mat4 GetAbsoluteTransformBasis() const;
 
 		};
 
