@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Billboards", "Billboards\Billboards.vcxproj", "{C42AAB8A-51C3-4F9D-A854-B06A9E0BC7ED}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSAO", "SSAO\SSAO.vcxproj", "{C4EE1B0B-F03D-47C7-980A-65AC4E85D2B1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShadowMaps", "ShadowMaps\ShadowMaps.vcxproj", "{024BE4B4-CD16-4E25-946F-FB70E685DA1C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinnedAnimation", "SkinnedAnimation\SkinnedAnimation.vcxproj", "{C6DD2EA2-5BE9-4E88-B4A4-EADA643CF715}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,8 +41,15 @@ Global
 		{024BE4B4-CD16-4E25-946F-FB70E685DA1C}.Debug|x64.Build.0 = Debug|x64
 		{024BE4B4-CD16-4E25-946F-FB70E685DA1C}.Release|x64.ActiveCfg = Release|x64
 		{024BE4B4-CD16-4E25-946F-FB70E685DA1C}.Release|x64.Build.0 = Release|x64
+		{C6DD2EA2-5BE9-4E88-B4A4-EADA643CF715}.Debug|x64.ActiveCfg = Debug|x64
+		{C6DD2EA2-5BE9-4E88-B4A4-EADA643CF715}.Debug|x64.Build.0 = Debug|x64
+		{C6DD2EA2-5BE9-4E88-B4A4-EADA643CF715}.Release|x64.ActiveCfg = Release|x64
+		{C6DD2EA2-5BE9-4E88-B4A4-EADA643CF715}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D2539D3B-F5AE-43E7-A7BD-44CFFC54412A}
 	EndGlobalSection
 EndGlobal
