@@ -53,15 +53,15 @@ void main()
 		}
 		else if (int(vBoneIndices.y) == uDebugWeightSelector)
 		{
-			fDebugColor.gb = vec2(vBoneWeights.y);
+			fDebugColor.rb = vec2(vBoneWeights.y);
 		}
 		else if (int(vBoneIndices.z) == uDebugWeightSelector)
 		{
-			fDebugColor.gb = vec2(vBoneWeights.z);
+			fDebugColor.rg = vec2(vBoneWeights.z);
 		}
 		else if (int(vBoneIndices.w) == uDebugWeightSelector)
 		{
-			fDebugColor.gb = vec2(vBoneWeights.w);
+			fDebugColor.g = vBoneWeights.w;
 		}
 	}
 
