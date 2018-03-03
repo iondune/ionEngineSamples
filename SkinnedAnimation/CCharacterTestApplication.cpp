@@ -30,6 +30,9 @@ void CCharacterTestApplication::Run()
 
 	OpenMesh(ion::CSkinnedMesh::Load("Assets/Meshes/model.dae"));
 
+	Visualizer.Load(CurrentMesh);
+	Visualizer.AddSceneObjects(RenderPass, SimpleShader, InstanceColorShader);
+
 	TimeManager->Init(WindowManager);
 	while (WindowManager->Run())
 	{
@@ -111,6 +114,8 @@ void CCharacterTestApplication::Run()
 			}
 		}
 		ImGui::End();
+
+		Visualizer.UpdateSceneObjects();
 
 		RenderTarget->ClearColorAndDepth();
 		SceneManager->DrawAll();

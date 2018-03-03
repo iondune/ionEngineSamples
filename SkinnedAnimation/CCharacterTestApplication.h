@@ -4,6 +4,7 @@
 #include <ionEngine.h>
 
 #include "CSkinnedMesh.h"
+#include "CSkinnedMeshSkeletonVisualizer.h"
 
 
 class CCharacterTestApplication : public ion::CDefaultApplication, public ion::Singleton<CCharacterTestApplication>
@@ -24,6 +25,8 @@ public:
 
 	ion::CSkinnedMesh * CurrentMesh = nullptr;
 	ion::Scene::CLineSceneObject * LineObject = nullptr;
+
+	ion::CSkinnedMeshSkeletonVisualizer Visualizer;
 
 private:
 

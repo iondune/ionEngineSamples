@@ -29,6 +29,7 @@ namespace ion
 			glm::mat4 RelativeTransform;
 			glm::mat4 OffsetTransform;
 			CJoint * Parent = nullptr;
+			vector<CJoint *> Children;
 
 			glm::mat4 * SkinningMatrix = nullptr;
 			glm::mat4 GetAbsoluteTransform() const;

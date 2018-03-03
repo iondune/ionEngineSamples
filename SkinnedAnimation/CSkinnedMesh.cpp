@@ -55,7 +55,10 @@ namespace ion
 			{
 				auto Parent = BoneMap[Joint]->Parent;
 				if (Parent)
+				{
 					Joint->Parent = JointMap[Parent];
+					JointMap[Parent]->Children.push_back(Joint);
+				}
 			}
 		}
 
