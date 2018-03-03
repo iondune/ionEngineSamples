@@ -31,7 +31,7 @@ void CCharacterTestApplication::Run()
 	OpenMesh(ion::CSkinnedMesh::Load("Assets/Meshes/model.dae"));
 
 	Visualizer.Load(CurrentMesh);
-	Visualizer.AddSceneObjects(RenderPass, SimpleShader, InstanceColorShader);
+	Visualizer.AddSceneObjects(RenderPass, ColorShader, InstanceColorShader);
 
 	TimeManager->Init(WindowManager);
 	while (WindowManager->Run())
@@ -155,7 +155,6 @@ void CCharacterTestApplication::LoadAssets()
 	GridMesh = CGeometryCreator::CreatePlane(20.f);
 	CubeMesh = CGeometryCreator::CreateCube();
 
-	DiffuseShader = AssetManager->LoadShader("Diffuse");
 	SimpleShader = AssetManager->LoadShader("Simple");
 	ColorShader = AssetManager->LoadShader("Color");
 	SkinnedShader = AssetManager->LoadShader("Skinned");

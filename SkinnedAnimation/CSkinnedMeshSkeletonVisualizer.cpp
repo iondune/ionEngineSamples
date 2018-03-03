@@ -16,7 +16,7 @@ namespace ion
 
 	void CSkinnedMeshSkeletonVisualizer::AddSceneObjects(
 		ion::Scene::CRenderPass * RenderPass,
-		SharedPointer<ion::Graphics::IShader> SimpleShader,
+		SharedPointer<ion::Graphics::IShader> LineShader,
 		SharedPointer<ion::Graphics::IShader> InstanceShader)
 	{
 		SingletonPointer<ion::CGraphicsAPI> GraphicsAPI;
@@ -32,7 +32,7 @@ namespace ion
 		JointInstanceBuffer->SetInputLayout(InstanceLayout, ION_ARRAYSIZE(InstanceLayout));
 
 		JointLinesObject = new CLineSceneObject();
-		JointLinesObject->SetShader(SimpleShader);
+		JointLinesObject->SetShader(LineShader);
 		JointLinesObject->Load(RenderPass);
 		JointLinesObject->SetFeatureEnabled(EDrawFeature::DisableDepthTest, true);
 		JointLinesObject->SetRenderCategory(1);

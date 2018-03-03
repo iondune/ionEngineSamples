@@ -17,7 +17,7 @@ namespace ion
 
 		void Load(CSkinnedMesh * SkinnedMesh);
 		void AddSceneObjects(ion::Scene::CRenderPass * RenderPass,
-			SharedPointer<ion::Graphics::IShader> SimpleShader,
+			SharedPointer<ion::Graphics::IShader> LineShader,
 			SharedPointer<ion::Graphics::IShader> InstanceShader);
 
 		void UpdateSceneObjects();
