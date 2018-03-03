@@ -40,7 +40,7 @@ namespace ion
 
 		JointSpheresObject = new CSimpleMeshSceneObject();
 		JointSpheresObject->SetShader(InstanceShader);
-		JointSpheresObject->SetMesh(CGeometryCreator::CreateSphere(0.05f, 4, 2));
+		JointSpheresObject->SetMesh(CGeometryCreator::CreateSphere(0.09f, 4, 2));
 		JointSpheresObject->SetFeatureEnabled(EDrawFeature::Wireframe, true);
 		JointSpheresObject->SetFeatureEnabled(EDrawFeature::DisableDepthTest, true);
 		JointSpheresObject->SetVertexBuffer(1, JointInstanceBuffer);
@@ -52,15 +52,23 @@ namespace ion
 	{
 		static color3f Colors[] =
 		{
-			Color::Hex(0xBE90D4),
-			Color::Hex(0xD490C0),
-			Color::Hex(0xD49090),
-			Color::Hex(0x909AD4),
-			Color::Hex(0x90BDD4),
-			Color::Hex(0x90D4BD),
-			Color::Hex(0x96D490),
-			Color::Hex(0xD4D390),
-			Color::Hex(0xD4B390),
+			color3i(121,96,191),
+			color3i(255,128,196),
+			color3i(82,0,204),
+			color3i(109,204,0),
+			color3i(229,115,130),
+			color3i(191,0,102),
+			color3i(217,54,54),
+			color3i(217,137,108),
+			color3i(102,156,204),
+			color3i(51,194,204),
+			color3i(217,181,108),
+			color3i(217,145,0),
+			color3i(0,136,255),
+			color3i(191,77,0),
+			color3i(191,179,0),
+			color3i(217,0,202),
+			color3i(108,217,137),
 		};
 
 		int i = 0;
