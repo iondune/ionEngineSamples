@@ -43,19 +43,6 @@ void CCharacterTestApplication::Run()
 
 		GUIManager->NewFrame();
 
-		if (ImGui::BeginMainMenuBar())
-		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("Import From Assimp..."))
-				{
-					OpenMesh(ion::CSkinnedMesh::Load("Assets/Meshes/Ben3ClothesRigged3.fbx"));
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMainMenuBar();
-		}
-
 		ImGui::SetNextWindowPos(ImVec2(10, 35), ImGuiSetCond_Once);
 		ImGui::SetNextWindowSize(ImVec2(500, 1295), ImGuiSetCond_Once);
 		if (ImGui::Begin("Mesh Editor"))
