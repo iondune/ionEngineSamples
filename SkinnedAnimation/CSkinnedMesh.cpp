@@ -1,5 +1,6 @@
 
 #include "CSkinnedMesh.h"
+#include <glm/gtx/dual_quaternion.hpp>
 
 
 namespace ion
@@ -90,17 +91,16 @@ namespace ion
 			
 			if (UseDualQuaternions)
 			{
-				glm::mat3 rotation = glm::mat3(transform);
-				glm::quat translation = glm::quat(0.f, transform[3][0], transform[3][1], transform[3][2]); // column-major
+				glm::quat rotation = glm::quat_cast(glm::mat3(transform));
+				glm::vec3 translation = glm::vec3(transform[3][0], transform[3][1], transform[3][2]); // column-major
 
-				glm::quat q0 = glm::quat_cast(rotation);
-				glm::quat q1 = (translation * q0) * 0.5f;
+				glm::dualquat dualquat = glm::dualquat(rotation, translation);
 
-				glm::mat4 dualquat = glm::mat4(0.f);
-				dualquat[0] = glm::vec4(q0.x, q0.y, q0.z, q0.w);
-				dualquat[1] = glm::vec4(q1.x, q1.y, q1.z, q1.w);
+				glm::mat4 encoded = glm::mat4(0.f);
+				encoded[0] = glm::vec4(dualquat.real.x, dualquat.real.y, dualquat.real.z, dualquat.real.w);
+				encoded[1] = glm::vec4(dualquat.dual.x, dualquat.dual.y, dualquat.dual.z, dualquat.dual.w);
 
-				*(Joint->SkinningMatrix) = dualquat;
+				*(Joint->SkinningMatrix) = encoded;
 			}
 			else
 			{
