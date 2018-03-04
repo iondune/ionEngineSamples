@@ -14,7 +14,7 @@ namespace ion
 		struct SJoint
 		{
 			SJoint * Parent = nullptr;
-			vec3f Rotation = vec3f(0, 3.1415f, 0);
+			vec3f Rotation = vec3f(0, 0, 0);
 			float Length = 0.75f;
 
 			glm::mat4 getLocalTransformation()
@@ -79,6 +79,7 @@ namespace ion
 		};
 
 		vector<SJoint *> Joints;
+		float Delta = DegToRad(30.f);
 
 		float GetValue(vec3f const & GoalPosition)
 		{
@@ -86,40 +87,46 @@ namespace ion
 			return Sq(GoalPosition.GetDistanceFrom(HandLoc));
 		}
 
-		void Run(vec3f const & GoalPosition)
+		void RunCCD(vec3f const & GoalPosition)
 		{
-			float Delta = DegToRad(30.f);
+			Delta = DegToRad(30.f);
 			for (int i = 0; i < 500; ++ i)
 			{
-				for (int t = 0; t < Joints.size(); ++t)
-				{
-					for (int u = 0; u < 3; ++ u)
-					{
-						float const LastValue = GetValue(GoalPosition);
-						Joints[t]->Rotation[u] += Delta;
-						float const AddValue = GetValue(GoalPosition);
-						Joints[t]->Rotation[u] -= 2 * Delta;
-						float const SubValue = GetValue(GoalPosition);
-						Joints[t]->Rotation[u] += Delta;
+				StepCCD(GoalPosition);
+			}
+		}
 
-						if (LastValue < AddValue && LastValue < SubValue)
-						{
-						}
-						else if (AddValue < SubValue)
-						{
-							Joints[t]->Rotation[u] += Delta;
-						}
-						else if (SubValue < AddValue)
-						{
-							Joints[t]->Rotation[u] -= Delta;
-						}
-						else
-						{
-						}
+		void StepCCD(vec3f const & GoalPosition)
+		{
+			for (int t = 0; t < Joints.size(); ++t)
+			{
+				for (int u = 0; u < 3; ++ u)
+				{
+					float const LastValue = GetValue(GoalPosition);
+					Joints[t]->Rotation[u] += Delta;
+					float const AddValue = GetValue(GoalPosition);
+					Joints[t]->Rotation[u] -= 2 * Delta;
+					float const SubValue = GetValue(GoalPosition);
+					Joints[t]->Rotation[u] += Delta;
+
+					if (LastValue < AddValue && LastValue < SubValue)
+					{
+					}
+					else if (AddValue < SubValue)
+					{
+						Joints[t]->Rotation[u] += Delta;
+					}
+					else if (SubValue < AddValue)
+					{
+						Joints[t]->Rotation[u] -= Delta;
+					}
+					else
+					{
 					}
 				}
-				Delta /= 1.01f;
 			}
+
+			Delta /= 1.01f;
 		}
 
 	};

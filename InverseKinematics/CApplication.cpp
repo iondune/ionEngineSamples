@@ -41,27 +41,27 @@ void CApplication::OnEvent(IEvent & Event)
 			{
 			case EKey::I:
 				GoalPosition.Z += OffsetSpeed;
-				DoCCD_IK(GoalPosition);
+				UpdateGoalPosition();
 				break;
 			case EKey::J:
 				GoalPosition.X += OffsetSpeed;
-				DoCCD_IK(GoalPosition);
+				UpdateGoalPosition();
 				break;
 			case EKey::K:
 				GoalPosition.Z -= OffsetSpeed;
-				DoCCD_IK(GoalPosition);
+				UpdateGoalPosition();
 				break;
 			case EKey::L:
 				GoalPosition.X -= OffsetSpeed;
-				DoCCD_IK(GoalPosition);
+				UpdateGoalPosition();
 				break;
 			case EKey::U:
 				GoalPosition.Y += OffsetSpeed;
-				DoCCD_IK(GoalPosition);
+				UpdateGoalPosition();
 				break;
 			case EKey::O:
 				GoalPosition.Y -= OffsetSpeed;
-				DoCCD_IK(GoalPosition);
+				UpdateGoalPosition();
 				break;
 			}
 		}
@@ -75,7 +75,7 @@ void CApplication::InitializeEngine()
 	WindowManager->Init(GraphicsAPI);
 	TimeManager->Init(WindowManager);
 
-	Window = WindowManager->CreateWindow(vec2i(1600, 900), "Inverse Kinematics", EWindowType::Windowed);
+	Window = WindowManager->CreateWindow(vec2i(1600, 900), "Inverse Kinematics", EWindowType::Windowed, EVsyncMode::On);
 	Window->AddChild(this);
 
 	GraphicsContext = GraphicsAPI->GetWindowContext(Window);
@@ -158,7 +158,6 @@ void CApplication::MainLoop()
 	Solver.Joints[2]->Parent = Solver.Joints[1];
 	Solver.Joints[1]->Parent = Solver.Joints[0];
 
-	DoCCD_IK(GoalPosition);
 	NodeObjects.resize(Solver.Joints.size() * 2);
 
 	for (int i = 0; i < NodeObjects.size(); ++ i)
@@ -181,7 +180,7 @@ void CApplication::MainLoop()
 	while (WindowManager->Run())
 	{
 		TimeManager->Update();
-		
+
 		// GUI
 		GUIManager->NewFrame();
 		ImGui::SetNextWindowPos(ImVec2(10, 10));
@@ -190,7 +189,14 @@ void CApplication::MainLoop()
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
 		{
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::Checkbox("Auto-Solve", &AutoSolve);
+			ImGui::DragFloat("Solver Step", &Solver.Delta);
 			ImGui::End();
+		}
+
+		if (Window->IsKeyDown(EKey::Space))
+		{
+			Solver.StepCCD(GoalPosition);
 		}
 
 
@@ -216,7 +222,11 @@ void CApplication::MainLoop()
 	}
 }
 
-void CApplication::DoCCD_IK(vec3f const & Goal)
+void CApplication::UpdateGoalPosition()
 {
-	Solver.Run(Goal);
+	Solver.Delta = DegToRad(30.f);
+	if (AutoSolve)
+	{
+		Solver.RunCCD(GoalPosition);
+	}
 }

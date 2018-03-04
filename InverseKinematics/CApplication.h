@@ -43,13 +43,15 @@ protected:
 	ion::SharedPointer<ion::Graphics::IRenderTarget> RenderTarget = nullptr;
 	ion::Scene::CPerspectiveCamera * FreeCamera = nullptr;
 
-	ion::vec3f GoalPosition = ion::vec3f(0.45f, 0, 0);
+	ion::vec3f GoalPosition = ion::vec3f(1.f, 0, 1.f);
 	std::vector<ion::Scene::CSimpleMeshSceneObject *> NodeObjects;
 	ion::Scene::CSimpleMeshSceneObject * GoalObject;
 
-	ion::CInverseKinematicsSolver Solver;
+	void UpdateGoalPosition();
 
-	void DoCCD_IK(ion::vec3f const & Goal);
+	bool AutoSolve = true;
+
+	ion::CInverseKinematicsSolver Solver;
 
 private:
 
