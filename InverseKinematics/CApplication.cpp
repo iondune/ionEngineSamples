@@ -190,6 +190,8 @@ void CApplication::MainLoop()
 		{
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::Checkbox("Auto-Solve", &AutoSolve);
+			ImGui::SameLine();
+			ImGui::Checkbox("Full Reset", &Solver.FullReset);
 			ImGui::DragFloat("Solver Step", &Solver.Delta);
 			ImGui::End();
 		}

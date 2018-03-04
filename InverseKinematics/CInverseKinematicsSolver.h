@@ -80,6 +80,7 @@ namespace ion
 
 		vector<SJoint *> Joints;
 		float Delta = DegToRad(30.f);
+		bool FullReset = false;
 
 		float GetValue(vec3f const & GoalPosition)
 		{
@@ -90,6 +91,15 @@ namespace ion
 		void RunCCD(vec3f const & GoalPosition)
 		{
 			Delta = DegToRad(30.f);
+
+			if (FullReset)
+			{
+				for (auto Joint : Joints)
+				{
+					Joint->Rotation = 0;
+				}
+			}
+
 			for (int i = 0; i < 500; ++ i)
 			{
 				StepCCD(GoalPosition);
