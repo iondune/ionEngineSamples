@@ -88,7 +88,7 @@ namespace ion
 		for (auto Joint : Joints)
 		{
 			glm::mat4 transform = Joint->GetAbsoluteTransform() * Joint->OffsetTransform;
-			
+
 			if (UseDualQuaternions)
 			{
 				glm::quat rotation = glm::quat_cast(glm::mat3(transform));
