@@ -55,7 +55,7 @@ void CCharacterTestApplication::Run()
 				ImGui::Checkbox("Do Skinning?", & CurrentMesh->DebugDoSkin.Get());
 				ImGui::Checkbox("Show Bone Weights By Vertex?", & CurrentMesh->DebugShowWeightsByVertex.Get());
 				ImGui::Checkbox("Show Bone Weights By Joint?", & CurrentMesh->DebugShowWeightsByJoint.Get());
-				ImGui::Checkbox("UseDualQuaternions?", & CurrentMesh->UseDualQuaternions);
+				ImGui::Checkbox("Use Dual Quaternions?", & CurrentMesh->UseDualQuaternions);
 				ImGui::SliderInt("Current Bone", & CurrentMesh->DebugWeightSelector.Get(), 0, (int) CurrentMesh->Joints.size() - 1);
 
 				int const CurrentJointIndex = CurrentMesh->DebugWeightSelector.Get();
