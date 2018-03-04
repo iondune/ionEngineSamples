@@ -10,7 +10,9 @@ namespace ion
 		glm::mat4 AbsoluteTransform = RelativeTransform * AnimationTransform.Get();
 
 		if (Parent)
+		{
 			AbsoluteTransform = Parent->GetAbsoluteTransform() * AbsoluteTransform;
+		}
 
 		return AbsoluteTransform;
 	}
@@ -84,7 +86,26 @@ namespace ion
 	{
 		for (auto Joint : Joints)
 		{
-			*(Joint->SkinningMatrix) = Joint->GetAbsoluteTransform() * Joint->OffsetTransform;
+			glm::mat4 transform = Joint->GetAbsoluteTransform() * Joint->OffsetTransform;
+			
+			if (UseDualQuaternions)
+			{
+				glm::mat3 rotation = glm::mat3(transform);
+				glm::quat translation = glm::quat(0.f, transform[3][0], transform[3][1], transform[3][2]); // column-major
+
+				glm::quat q0 = glm::quat_cast(rotation);
+				glm::quat q1 = (translation * q0) * 0.5f;
+
+				glm::mat4 dualquat = glm::mat4(0.f);
+				dualquat[0] = glm::vec4(q0.x, q0.y, q0.z, q0.w);
+				dualquat[1] = glm::vec4(q1.x, q1.y, q1.z, q1.w);
+
+				*(Joint->SkinningMatrix) = dualquat;
+			}
+			else
+			{
+				*(Joint->SkinningMatrix) = transform;
+			}
 		}
 
 		Root->Draw(RenderPass, this);

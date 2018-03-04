@@ -22,6 +22,7 @@ namespace ion
 			Buffer->PipelineState->OfferUniform("uDebugShowWeightsByVertex", SkinnedMesh->DebugShowWeightsByVertex);
 			Buffer->PipelineState->OfferUniform("uDebugShowWeightsByJoint", SkinnedMesh->DebugShowWeightsByJoint);
 			Buffer->PipelineState->OfferUniform("uDebugWeightSelector", SkinnedMesh->DebugWeightSelector);
+			Buffer->PipelineState->OfferUniform("uUseDualQuaternions", std::make_shared<Graphics::CUniformReference<bool>>(& SkinnedMesh->UseDualQuaternions));
 			Buffer->PipelineState->OfferTexture("uTexture", SkinnedMesh->Texture);
 			RenderPass->PreparePipelineStateForRendering(Buffer->PipelineState, SkinnedMesh);
 		}

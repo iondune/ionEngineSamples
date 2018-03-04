@@ -25,9 +25,15 @@ namespace ion
 
 			string Name;
 
+			//! Local pose of this joint - this should be modified at run time to animate the joint
 			STransformation3 AnimationTransform;
+
+			//! Relative transfrom from the parent joint to this joint
 			glm::mat4 RelativeTransform;
+
+			//! Transform from object space to bone space (inverse bind matrix)
 			glm::mat4 OffsetTransform;
+
 			CJoint * Parent = nullptr;
 			vector<CJoint *> Children;
 
@@ -38,6 +44,7 @@ namespace ion
 
 		vector<SSkinnedMeshBuffer *> Buffers;
 		SSkinnedMeshNode * Root = nullptr;
+		bool UseDualQuaternions = false;
 
 		vector<CJoint *> Joints;
 		Graphics::CUniform<vector<glm::mat4>> uSkinningMatrices;
