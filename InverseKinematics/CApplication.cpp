@@ -33,29 +33,35 @@ void CApplication::OnEvent(IEvent & Event)
 			case EKey::F:
 				RenderPass->SetActiveCamera(FreeCamera);
 				break;
+			}
+		}
+		else if (KeyboardEvent.Pressed)
+		{
+			switch (KeyboardEvent.Key)
+			{
 			case EKey::I:
 				GoalPosition.Z += OffsetSpeed;
-				Configuration = DoCCD_IK(GoalPosition);
+				DoCCD_IK(GoalPosition);
 				break;
 			case EKey::J:
 				GoalPosition.X += OffsetSpeed;
-				Configuration = DoCCD_IK(GoalPosition);
+				DoCCD_IK(GoalPosition);
 				break;
 			case EKey::K:
 				GoalPosition.Z -= OffsetSpeed;
-				Configuration = DoCCD_IK(GoalPosition);
+				DoCCD_IK(GoalPosition);
 				break;
 			case EKey::L:
 				GoalPosition.X -= OffsetSpeed;
-				Configuration = DoCCD_IK(GoalPosition);
+				DoCCD_IK(GoalPosition);
 				break;
 			case EKey::U:
 				GoalPosition.Y += OffsetSpeed;
-				Configuration = DoCCD_IK(GoalPosition);
+				DoCCD_IK(GoalPosition);
 				break;
 			case EKey::O:
 				GoalPosition.Y -= OffsetSpeed;
-				Configuration = DoCCD_IK(GoalPosition);
+				DoCCD_IK(GoalPosition);
 				break;
 			}
 		}
@@ -145,15 +151,22 @@ void CApplication::AddSceneObjects()
 
 void CApplication::MainLoop()
 {
-	Configuration = DoCCD_IK(GoalPosition);
-	NodeObjects.resize(Configuration.size());
+	Solver.Joints.push_back(new CInverseKinematicsSolver::SJoint());
+	Solver.Joints.push_back(new CInverseKinematicsSolver::SJoint());
+	Solver.Joints.push_back(new CInverseKinematicsSolver::SJoint());
+
+	Solver.Joints[2]->Parent = Solver.Joints[1];
+	Solver.Joints[1]->Parent = Solver.Joints[0];
+
+	DoCCD_IK(GoalPosition);
+	NodeObjects.resize(Solver.Joints.size() * 2);
 
 	for (int i = 0; i < NodeObjects.size(); ++ i)
 	{
 		NodeObjects[i] = new CSimpleMeshSceneObject();
 		NodeObjects[i]->SetMesh(CubeMesh);
 		NodeObjects[i]->SetShader(ColorShader);
-		NodeObjects[i]->SetScale(0.15f);
+		NodeObjects[i]->SetScale(i % 2 ? 0.1f : 0.15f);
 		NodeObjects[i]->SetUniformValue("uColor", Color::HSV((float) i / NodeObjects.size(), 0.8f, 0.9f));
 		RenderPass->AddSceneObject(NodeObjects[i]);
 	}
@@ -184,7 +197,7 @@ void CApplication::MainLoop()
 
 		for (int i = 0; i < NodeObjects.size(); ++ i)
 		{
-			NodeObjects[i]->SetPosition(Configuration[i] * 3.f);
+			NodeObjects[i]->SetPosition((i % 2 ? Solver.Joints[i/2]->getHalfLocation() : Solver.Joints[i/2]->getLocation()) * 3.f);
 		}
 
 		GoalObject->SetPosition(GoalPosition * 3.f);
@@ -197,137 +210,7 @@ void CApplication::MainLoop()
 	}
 }
 
-vector<vec3f> CApplication::DoCCD_IK(vec3f const & Goal)
+void CApplication::DoCCD_IK(vec3f const & Goal)
 {
-	struct Joint
-	{
-		Joint * Parent;
-		vec3f Rotation = vec3f(0, 3.1415f, 0);
-		float Length;
-
-		Joint()
-			: Parent(0), Length(0)
-		{}
-
-		glm::mat4 getLocalTransformation()
-		{
-			glm::mat4 Trans = glm::translate(glm::mat4(1.f), glm::vec3(Length, 0, 0));
-
-			glm::mat4 Rot = glm::mat4(1.f);
-			Rot = glm::rotate(Rot, Rotation.Z, glm::vec3(0, 0, 1));
-			Rot = glm::rotate(Rot, Rotation.Y, glm::vec3(0, 1, 0));
-			Rot = glm::rotate(Rot, Rotation.X, glm::vec3(1, 0, 0));
-
-			return Rot * Trans;
-		}
-
-		glm::mat4 getLocalHalfTransformation()
-		{
-			glm::mat4 Trans = glm::translate(glm::mat4(1.f), glm::vec3(Length / 2.f, 0, 0));
-
-			glm::mat4 Rot = glm::mat4(1.f);
-			Rot = glm::rotate(Rot, Rotation.Z, glm::vec3(0, 0, 1));
-			Rot = glm::rotate(Rot, Rotation.Y, glm::vec3(0, 1, 0));
-			Rot = glm::rotate(Rot, Rotation.X, glm::vec3(1, 0, 0));
-
-			return Rot * Trans;
-		}
-
-		glm::mat4 getTransformation()
-		{
-			glm::mat4 Trans = getLocalTransformation();
-
-			if (Parent)
-				Trans = Parent->getTransformation() * Trans;
-
-			return Trans;
-		}
-
-		glm::mat4 getHalfTransformation()
-		{
-			glm::mat4 Trans = getLocalHalfTransformation();
-
-			if (Parent)
-				Trans = Parent->getTransformation() * Trans;
-
-			return Trans;
-		}
-
-		vec3f const getLocation()
-		{
-			glm::vec4 v(0, 0, 0, 1);
-			v = getTransformation() * v;
-
-			return vec3f(v.x, v.y, v.z);
-		}
-
-		vec3f const getHalfLocation()
-		{
-			glm::vec4 v(0, 0, 0, 1);
-			v = getHalfTransformation() * v;
-
-			return vec3f(v.x, v.y, v.z);
-		}
-	};
-
-	Joint Root, Joint1, Hand;
-	Root.Length = Joint1.Length = 0.25f;
-	Joint1.Parent = & Root;
-	Hand.Parent = & Joint1;
-
-	Joint * Joints[] = { & Root, & Joint1 };
-
-	vec3f EndEffector(Goal.X, Goal.Y, Goal.Z);
-
-	{
-		auto GetValue = [&]() -> float
-		{
-			vec3f const HandLoc = Hand.getLocation();
-			return Sq(EndEffector.GetDistanceFrom(HandLoc));
-		};
-
-		float Delta = DegToRad(30.f);
-		for (int i = 0; i < 500; ++ i)
-		{
-			for (int t = 0; t < ION_ARRAYSIZE(Joints); ++t)
-			{
-				for (int u = 0; u < 3; ++ u)
-				{
-					float const LastValue = GetValue();
-					Joints[t]->Rotation[u] += Delta;
-					float const AddValue = GetValue();
-					Joints[t]->Rotation[u] -= 2 * Delta;
-					float const SubValue = GetValue();
-					Joints[t]->Rotation[u] += Delta;
-
-					if (LastValue < AddValue && LastValue < SubValue)
-					{
-					}
-					else if (AddValue < SubValue)
-					{
-						Joints[t]->Rotation[u] += Delta;
-					}
-					else if (SubValue < AddValue)
-					{
-						Joints[t]->Rotation[u] -= Delta;
-					}
-					else
-					{
-					}
-				}
-			}
-			Delta /= 1.01f;
-		}
-	}
-
-	vec3f cent = vec3f(0);
-	return {
-		cent,
-		(cent + Root.getLocation()),
-		(cent + Root.getHalfLocation()),
-		(cent + Joint1.getLocation()),
-		(cent + Joint1.getHalfLocation()),
-		(cent + Hand.getLocation()),
-		(cent + Hand.getHalfLocation()),
-	};
+	Solver.Run(Goal);
 }

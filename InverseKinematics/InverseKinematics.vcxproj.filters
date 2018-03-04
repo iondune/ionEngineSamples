@@ -6,5 +6,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CApplication.h" />
+    <ClInclude Include="CInverseKinematicsSolver.h" />
   </ItemGroup>
 </Project>

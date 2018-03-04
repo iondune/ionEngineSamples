@@ -2,6 +2,7 @@
 #pragma once
 
 #include <ionEngine.h>
+#include "CInverseKinematicsSolver.h"
 
 
 class CApplication : public ion::Singleton<CApplication>, public IEventListener
@@ -46,8 +47,9 @@ protected:
 	std::vector<ion::Scene::CSimpleMeshSceneObject *> NodeObjects;
 	ion::Scene::CSimpleMeshSceneObject * GoalObject;
 
-	ion::vector<ion::vec3f> Configuration;
-	ion::vector<ion::vec3f> DoCCD_IK(ion::vec3f const & Goal);
+	ion::CInverseKinematicsSolver Solver;
+
+	void DoCCD_IK(ion::vec3f const & Goal);
 
 private:
 
