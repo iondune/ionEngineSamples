@@ -22,7 +22,7 @@ void CApplication::OnEvent(IEvent & Event)
 	{
 		SKeyboardEvent KeyboardEvent = As<SKeyboardEvent>(Event);
 
-		static const float OffsetSpeed = 0.025f;
+		static const float OffsetSpeed = 0.06f;
 
 		if (! KeyboardEvent.Pressed)
 		{
@@ -166,7 +166,6 @@ void CApplication::MainLoop()
 		NodeObjects[i] = new CSimpleMeshSceneObject();
 		NodeObjects[i]->SetMesh(CubeMesh);
 		NodeObjects[i]->SetShader(ColorShader);
-		NodeObjects[i]->SetScale(i % 2 ? 0.1f : 0.15f);
 		NodeObjects[i]->SetUniformValue("uColor", Color::HSV((float) i / NodeObjects.size(), 0.8f, 0.9f));
 		RenderPass->AddSceneObject(NodeObjects[i]);
 	}
@@ -197,10 +196,17 @@ void CApplication::MainLoop()
 
 		for (int i = 0; i < NodeObjects.size(); ++ i)
 		{
-			NodeObjects[i]->SetPosition((i % 2 ? Solver.Joints[i/2]->getHalfLocation() : Solver.Joints[i/2]->getLocation()) * 3.f);
+			if (i % 2)
+			{
+				NodeObjects[i]->SetTransformation(Solver.Joints[i/2]->getTransformation() * glm::scale(glm::mat4(1.f), glm::vec3(0.15f)));
+			}
+			else
+			{
+				NodeObjects[i]->SetTransformation(Solver.Joints[i/2]->getHalfTransformation() * glm::scale(glm::mat4(1.f), glm::vec3(0.5f, 0.1f, 0.1f)));
+			}
 		}
 
-		GoalObject->SetPosition(GoalPosition * 3.f);
+		GoalObject->SetPosition(GoalPosition);
 
 		// Draw
 		RenderTarget->ClearColorAndDepth();

@@ -15,7 +15,7 @@ namespace ion
 		{
 			SJoint * Parent = nullptr;
 			vec3f Rotation = vec3f(0, 3.1415f, 0);
-			float Length = 0.25f;
+			float Length = 0.75f;
 
 			glm::mat4 getLocalTransformation()
 			{
