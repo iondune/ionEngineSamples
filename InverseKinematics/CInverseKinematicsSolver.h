@@ -17,7 +17,10 @@ namespace ion
 			vec3f Rotation = vec3f(0, 0, 0);
 			float Length = 0.75f;
 
-			glm::mat4 getLocalTransformation()
+			// For FABRIK
+			vec3f InboardLocation, OutboardLocation;
+
+			glm::mat4 GetLocalOutboardTransformation()
 			{
 				glm::mat4 Trans = glm::translate(glm::mat4(1.f), glm::vec3(Length, 0, 0));
 
@@ -29,7 +32,7 @@ namespace ion
 				return Rot * Trans;
 			}
 
-			glm::mat4 getLocalHalfTransformation()
+			glm::mat4 GetLocalHalfpointTransformation()
 			{
 				glm::mat4 Trans = glm::translate(glm::mat4(1.f), glm::vec3(Length / 2.f, 0, 0));
 
@@ -41,38 +44,68 @@ namespace ion
 				return Rot * Trans;
 			}
 
-			glm::mat4 getTransformation()
+			glm::mat4 GetLocalInboardTransformation()
 			{
-				glm::mat4 Trans = getLocalTransformation();
+				glm::mat4 Rot = glm::mat4(1.f);
+				Rot = glm::rotate(Rot, Rotation.Z, glm::vec3(0, 0, 1));
+				Rot = glm::rotate(Rot, Rotation.Y, glm::vec3(0, 1, 0));
+				Rot = glm::rotate(Rot, Rotation.X, glm::vec3(1, 0, 0));
+
+				return Rot;
+			}
+
+			glm::mat4 GetOutboardTransformation()
+			{
+				glm::mat4 Trans = GetLocalOutboardTransformation();
 
 				if (Parent)
-					Trans = Parent->getTransformation() * Trans;
+				{
+					Trans = Parent->GetOutboardTransformation() * Trans;
+				}
 
 				return Trans;
 			}
 
-			glm::mat4 getHalfTransformation()
+			glm::mat4 GetHalfpointTransformation()
 			{
-				glm::mat4 Trans = getLocalHalfTransformation();
+				glm::mat4 Trans = GetLocalHalfpointTransformation();
 
 				if (Parent)
-					Trans = Parent->getTransformation() * Trans;
+					Trans = Parent->GetOutboardTransformation() * Trans;
 
 				return Trans;
 			}
 
-			vec3f const getLocation()
+			glm::mat4 GetInboardTransformation()
+			{
+				glm::mat4 Trans = GetLocalInboardTransformation();
+
+				if (Parent)
+					Trans = Parent->GetOutboardTransformation() * Trans;
+
+				return Trans;
+			}
+
+			vec3f const GetOutboardLocation()
 			{
 				glm::vec4 v(0, 0, 0, 1);
-				v = getTransformation() * v;
+				v = GetOutboardTransformation() * v;
 
 				return vec3f(v.x, v.y, v.z);
 			}
 
-			vec3f const getHalfLocation()
+			vec3f const GetHalfpointLocation()
 			{
 				glm::vec4 v(0, 0, 0, 1);
-				v = getHalfTransformation() * v;
+				v = GetHalfpointTransformation() * v;
+
+				return vec3f(v.x, v.y, v.z);
+			}
+
+			vec3f const GetInboardLocation()
+			{
+				glm::vec4 v(0, 0, 0, 1);
+				v = GetInboardTransformation() * v;
 
 				return vec3f(v.x, v.y, v.z);
 			}
@@ -81,14 +114,15 @@ namespace ion
 		vector<SJoint *> Joints;
 		float Delta = DegToRad(30.f);
 		bool FullReset = false;
+		bool UseFABRIK = false;
 
 		float GetValue(vec3f const & GoalPosition)
 		{
-			vec3f const HandLoc = Joints.back()->getLocation();
+			vec3f const HandLoc = Joints.back()->GetOutboardLocation();
 			return Sq(GoalPosition.GetDistanceFrom(HandLoc));
 		}
 
-		void RunCCD(vec3f const & GoalPosition)
+		void RunIK(vec3f const & GoalPosition)
 		{
 			Delta = DegToRad(30.f);
 
@@ -102,7 +136,14 @@ namespace ion
 
 			for (int i = 0; i < 500; ++ i)
 			{
-				StepCCD(GoalPosition);
+				if (UseFABRIK)
+				{
+					StepFABRIK(GoalPosition);
+				}
+				else
+				{
+					StepCCD(GoalPosition);
+				}
 			}
 		}
 
@@ -137,6 +178,15 @@ namespace ion
 			}
 
 			Delta /= 1.01f;
+		}
+
+		void StepFABRIK(vec3f const & GoalPosition)
+		{
+			for (int t = (int) Joints.size() - 1; t >= 0; -- t)
+			{
+				Joints[t]->InboardLocation = Joints[t]->GetInboardLocation();
+				Joints[t]->OutboardLocation = Joints[t]->GetOutboardLocation();
+			}
 		}
 
 	};

@@ -100,6 +100,7 @@ void CApplication::LoadAssets()
 
 	SimpleTextureShader = AssetManager->LoadShader("SimpleTexture");
 	ColorShader = AssetManager->LoadShader("Color");
+	LineShader = AssetManager->LoadShader("Line");
 
 	GroundTexture = AssetManager->LoadTexture("Ground.png");
 	if (GroundTexture)
@@ -138,6 +139,10 @@ void CApplication::AddSceneObjects()
 	GroundObject->SetPosition(vec3f(0, -0.5f, 0));
 	GroundObject->SetTexture("uTexture", GroundTexture);
 	RenderPass->AddSceneObject(GroundObject);
+
+	DebugLines = new CLineSceneObject();
+	DebugLines->SetShader(LineShader);
+	RenderPass->AddSceneObject(DebugLines);
 
 	CDirectionalLight * Light = new CDirectionalLight();
 	Light->SetDirection(vec3f(1, -2, 1));
@@ -193,6 +198,7 @@ void CApplication::MainLoop()
 			ImGui::SameLine();
 			ImGui::Checkbox("Full Reset", &Solver.FullReset);
 			ImGui::DragFloat("Solver Step", &Solver.Delta);
+			ImGui::Checkbox("Clear Points", &ClearPoints);
 			ImGui::End();
 		}
 
@@ -201,16 +207,23 @@ void CApplication::MainLoop()
 			Solver.StepCCD(GoalPosition);
 		}
 
+		if (ClearPoints)
+		{
+			DebugLines->ResetLines();
+		}
+
 
 		for (int i = 0; i < NodeObjects.size(); ++ i)
 		{
 			if (i % 2)
 			{
-				NodeObjects[i]->SetTransformation(Solver.Joints[i/2]->getTransformation() * glm::scale(glm::mat4(1.f), glm::vec3(0.15f)));
+				NodeObjects[i]->SetTransformation(Solver.Joints[i/2]->GetOutboardTransformation() * glm::scale(glm::mat4(1.f), glm::vec3(0.15f)));
+				DebugLines->AddStar(Solver.Joints[i/2]->GetOutboardLocation(), 0.06f, Color::HSV((float) i / NodeObjects.size(), 0.8f, 0.9f));
+				DebugLines->AddStar(Solver.Joints[i/2]->GetInboardLocation(), 0.04f, Color::HSV((float) i / NodeObjects.size(), 0.8f, 0.9f));
 			}
 			else
 			{
-				NodeObjects[i]->SetTransformation(Solver.Joints[i/2]->getHalfTransformation() * glm::scale(glm::mat4(1.f), glm::vec3(0.5f, 0.1f, 0.1f)));
+				NodeObjects[i]->SetTransformation(Solver.Joints[i/2]->GetHalfpointTransformation() * glm::scale(glm::mat4(1.f), glm::vec3(0.5f, 0.1f, 0.1f)));
 			}
 		}
 
@@ -229,6 +242,6 @@ void CApplication::UpdateGoalPosition()
 	Solver.Delta = DegToRad(30.f);
 	if (AutoSolve)
 	{
-		Solver.RunCCD(GoalPosition);
+		Solver.RunIK(GoalPosition);
 	}
 }

@@ -26,6 +26,7 @@ public:
 
 	ion::SharedPointer<ion::Graphics::IShader> SimpleTextureShader;
 	ion::SharedPointer<ion::Graphics::IShader> ColorShader;
+	ion::SharedPointer<ion::Graphics::IShader> LineShader;
 
 	ion::Scene::CSimpleMesh * CubeMesh = nullptr;
 	ion::Scene::CSimpleMesh * SphereMesh = nullptr;
@@ -46,6 +47,9 @@ protected:
 	ion::vec3f GoalPosition = ion::vec3f(1.f, 0, 1.f);
 	std::vector<ion::Scene::CSimpleMeshSceneObject *> NodeObjects;
 	ion::Scene::CSimpleMeshSceneObject * GoalObject;
+	ion::Scene::CLineSceneObject * DebugLines = nullptr;
+
+	bool ClearPoints = true;
 
 	void UpdateGoalPosition();
 
