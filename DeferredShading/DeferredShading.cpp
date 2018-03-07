@@ -50,7 +50,7 @@ int main()
 
 	SharedPointer<IGraphicsContext> Context = GraphicsAPI->GetWindowContext(Window);
 	SharedPointer<IRenderTarget> BackBuffer = Context->GetBackBuffer();
-	BackBuffer->SetClearColor(color3f(0.3f));
+	BackBuffer->SetClearColor(color3f(0.0f));
 
 	SharedPointer<IFrameBuffer> SceneFrameBuffer = Context->CreateFrameBuffer();
 
@@ -82,6 +82,7 @@ int main()
 
 	SharedPointer<IShader> GeometryShader = AssetManager->LoadShader("Geometry");
 	SharedPointer<IShader> DeferredDebugShader = AssetManager->LoadShader("Debug");
+	SharedPointer<IShader> DeferredPointLightShader = AssetManager->LoadShader("PointLight");
 
 
 
@@ -182,6 +183,29 @@ int main()
 	PostProcessObject->SetUniform("uMode", std::make_shared<CUniformReference<int>>(&DebugMode));
 	DeferredPass->AddSceneObject(PostProcessObject);
 
+	vector<CSimpleMeshSceneObject *> LightObjects;
+
+	const int NumLights = 30;
+
+	for (int i = 0; i < NumLights; ++ i)
+	{
+		const vec3f LightPosition = vec3f(nrand() * 30.f, frand() * 3.f, nrand() * 30.f);
+		const color3f LightColor = Color::HSV(frand(), 1.f, 1.f);
+
+		CSimpleMeshSceneObject * LightObject = new CSimpleMeshSceneObject();
+		LightObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
+		LightObject->SetShader(DeferredPointLightShader);
+		LightObject->SetTexture("tSceneColor", SceneColor);
+		LightObject->SetTexture("tSceneNormals", SceneNormal);
+		LightObject->SetTexture("tSceneDepth", SceneDepth);
+		LightObject->SetBlendMode(EBlendMode::Additive);
+		LightObject->SetUniform("uPosition", CUniform<vec3f>(LightPosition));
+		LightObject->SetUniform("uColor", CUniform<vec3f>(LightColor));
+		DeferredPass->AddSceneObject(LightObject);
+
+		LightObjects.push_back(LightObject);
+	}
+
 	CPointLight * Light1 = new CPointLight();
 	Light1->SetPosition(vec3f(0, 6, 0));
 	RenderPass->AddLight(Light1);
@@ -206,7 +230,8 @@ int main()
 
 			ImGui::Separator();
 
-			ImGui::RadioButton("Default", DebugMode == 0);
+			ImGui::RadioButton("Deferred", DebugMode == -1);
+			ImGui::RadioButton("Simple Shading", DebugMode == 0);
 			ImGui::RadioButton("Colors", DebugMode == 1);
 			ImGui::RadioButton("Normals", DebugMode == 2);
 			ImGui::RadioButton("Depth", DebugMode == 3);
@@ -214,8 +239,12 @@ int main()
 			ImGui::End();
 		}
 
-		DebugMode = 0;
-		if (Window->IsKeyDown(EKey::J))
+		DebugMode = -1;
+		if (Window->IsKeyDown(EKey::H))
+		{
+			DebugMode = 0;
+		}
+		else if (Window->IsKeyDown(EKey::J))
 		{
 			DebugMode = 1;
 		}
@@ -228,6 +257,11 @@ int main()
 			DebugMode = 3;
 		}
 
+		PostProcessObject->SetVisible(DebugMode >= 0);
+		for (auto LightObject : LightObjects)
+		{
+			LightObject->SetVisible(DebugMode == -1);
+		}
 
 		SceneFrameBuffer->ClearColorAndDepth();
 		BackBuffer->ClearColorAndDepth();
