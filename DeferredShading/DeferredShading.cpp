@@ -102,7 +102,7 @@ int main()
 	Camera->SetPosition(vec3f(-1.7f, 2.8f, 3.4f));
 	Camera->SetFocalLength(0.4f);
 	Camera->SetNearPlane(0.1f);
-	Camera->SetFarPlane(50.f);
+	Camera->SetFarPlane(150.f);
 	RenderPass->SetActiveCamera(Camera);
 	DeferredPass->SetActiveCamera(Camera);
 
@@ -235,6 +235,7 @@ int main()
 			ImGui::RadioButton("Colors", DebugMode == 1);
 			ImGui::RadioButton("Normals", DebugMode == 2);
 			ImGui::RadioButton("Depth", DebugMode == 3);
+			ImGui::RadioButton("Positions", DebugMode == 4);
 
 			ImGui::End();
 		}
@@ -255,6 +256,10 @@ int main()
 		else if (Window->IsKeyDown(EKey::L))
 		{
 			DebugMode = 3;
+		}
+		else if (Window->IsKeyDown(EKey::Semicolon))
+		{
+			DebugMode = 4;
 		}
 
 		PostProcessObject->SetVisible(DebugMode >= 0);

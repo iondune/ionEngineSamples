@@ -5,6 +5,7 @@ out vec4 outColor;
 in vec2 fTexCoords;
 
 uniform mat4 uProjectionMatrix;
+uniform mat4 uViewMatrix;
 
 uniform sampler2D tSceneColor;
 uniform sampler2D tSceneNormals;
@@ -22,12 +23,14 @@ float linearizeDepth(in float depth)
 	return (2.0 * zNear) / (zFar + zNear - depth * (zFar - zNear));
 }
 
-vec3 reconstructViewspacePosition(vec2 texCoords)
+vec3 reconstructWorldspacePosition(vec2 texCoords)
 {
 	float depth = texture(tSceneDepth, texCoords).r;
 	vec3 ndc = vec3(texCoords, depth) * 2.0 - vec3(1.0);
 	vec4 view = inverse(uProjectionMatrix) * vec4(ndc, 1.0);
-	return view.xyz / view.w;
+	view.xyz /= view.w;
+	vec4 world = inverse(uViewMatrix) * vec4(view.xyz, 1.0);
+	return world.xyz;
 }
 
 void main()
@@ -61,5 +64,11 @@ void main()
 		outColor.r = depth;
 		outColor.g = linDepth;
 		outColor.b = sin(linDepth * 3.1415 * 2.0);
+	}
+	else if (uMode == 4) // Debug Position
+	{
+		vec3 world = reconstructWorldspacePosition(fTexCoords);
+
+		outColor.rgb = mod(world, vec3(1.0));
 	}
 }

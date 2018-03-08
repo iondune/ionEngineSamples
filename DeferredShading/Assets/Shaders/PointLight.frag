@@ -37,11 +37,12 @@ void main()
 
 	float diffuse = 0.6 * clamp(dot(normal, light), 0.0, 1.0);
 
-	const float a = 1.0;
-	const float b = 5.0;
-	const float c = 5.0;
 
-	float attenuation = 1.0 / (1.0 + b * distance + c * distance * distance);
+	const float cutoff = 0.005;
+	const float radius = 3.0;
 
-	outColor.rgb = texture(tSceneColor, fTexCoords).rgb * diffuse * uColor;
+	float denom = distance/radius + 1;
+	float attenuation = max((1 / (denom*denom) - cutoff) / (1 - cutoff), 0);
+
+	outColor.rgb = texture(tSceneColor, fTexCoords).rgb * diffuse * uColor * attenuation;
 }
