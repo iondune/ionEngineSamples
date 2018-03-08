@@ -39,7 +39,7 @@ int main()
 	SceneManager->Init(GraphicsAPI);
 	AssetManager->Init(GraphicsAPI);
 
-	CWindow * Window = WindowManager->CreateWindowOnMonitor(2, "DeferredShading");
+	CWindow * Window = WindowManager->CreateWindowOnMonitor(0, "DeferredShading");
 
 	GUIManager->Init(Window);
 	Window->AddListener(GUIManager);
