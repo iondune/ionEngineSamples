@@ -4,8 +4,8 @@
 out vec4 outColor;
 in vec2 fTexCoords;
 
-uniform mat4 uProjectionMatrix;
-uniform mat4 uViewMatrix;
+uniform mat4 uInvProjectionMatrix;
+uniform mat4 uInvViewMatrix;
 
 uniform sampler2D tSceneColor;
 uniform sampler2D tSceneNormals;
@@ -18,9 +18,9 @@ vec3 reconstructWorldspacePosition(vec2 texCoords)
 {
 	float depth = texture(tSceneDepth, texCoords).r;
 	vec3 ndc = vec3(texCoords, depth) * 2.0 - vec3(1.0);
-	vec4 view = inverse(uProjectionMatrix) * vec4(ndc, 1.0);
+	vec4 view = uInvProjectionMatrix * vec4(ndc, 1.0);
 	view.xyz /= view.w;
-	vec4 world = inverse(uViewMatrix) * vec4(view.xyz, 1.0);
+	vec4 world = uInvViewMatrix * vec4(view.xyz, 1.0);
 	return world.xyz;
 }
 

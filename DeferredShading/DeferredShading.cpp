@@ -183,9 +183,8 @@ int main()
 	PostProcessObject->SetUniform("uMode", std::make_shared<CUniformReference<int>>(&DebugMode));
 	DeferredPass->AddSceneObject(PostProcessObject);
 
+	const int NumLights = 100;
 	vector<CSimpleMeshSceneObject *> LightObjects;
-
-	const int NumLights = 30;
 
 	for (int i = 0; i < NumLights; ++ i)
 	{
