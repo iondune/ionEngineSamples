@@ -184,30 +184,48 @@ int main()
 	DeferredPass->AddSceneObject(PostProcessObject);
 
 	const int NumLights = 100;
-	vector<CSimpleMeshSceneObject *> LightObjects;
 
+	SharedPointer<Graphics::IVertexBuffer> LightInstanceBuffer = GraphicsAPI->CreateVertexBuffer();
+	LightInstanceBuffer->SetInstancingEnabled(true);
+	Graphics::SInputLayoutElement InstanceLayout[] =
+	{
+		{ "iPosition", 3, Graphics::EAttributeType::Float },
+		{ "iColor",    3, Graphics::EAttributeType::Float },
+	};
+	LightInstanceBuffer->SetInputLayout(InstanceLayout, ION_ARRAYSIZE(InstanceLayout));
+
+	vector<float> Data;
 	for (int i = 0; i < NumLights; ++ i)
 	{
 		const vec3f LightPosition = vec3f(nrand() * 30.f, frand() * 3.f, nrand() * 30.f);
 		const color3f LightColor = Color::HSV(frand(), 1.f, 1.f);
 
-		CSimpleMeshSceneObject * LightObject = new CSimpleMeshSceneObject();
-		LightObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
-		LightObject->SetShader(DeferredPointLightShader);
-		LightObject->SetTexture("tSceneColor", SceneColor);
-		LightObject->SetTexture("tSceneNormals", SceneNormal);
-		LightObject->SetTexture("tSceneDepth", SceneDepth);
-		LightObject->SetBlendMode(EBlendMode::Additive);
-		LightObject->SetUniform("uPosition", CUniform<vec3f>(LightPosition));
-		LightObject->SetUniform("uColor", CUniform<vec3f>(LightColor));
-		DeferredPass->AddSceneObject(LightObject);
-
-		LightObjects.push_back(LightObject);
+		Data.push_back(LightPosition.X);
+		Data.push_back(LightPosition.Y);
+		Data.push_back(LightPosition.Z);
+		Data.push_back(LightColor.Red);
+		Data.push_back(LightColor.Green);
+		Data.push_back(LightColor.Blue);
 	}
+	LightInstanceBuffer->UploadData(Data);
 
-	CPointLight * Light1 = new CPointLight();
-	Light1->SetPosition(vec3f(0, 6, 0));
-	RenderPass->AddLight(Light1);
+	CUniform<float> LightRadius = 15.f;
+
+	CSimpleMeshSceneObject * LightObjects = new CSimpleMeshSceneObject();
+	LightObjects->SetMesh(SphereMesh);
+	LightObjects->SetShader(DeferredPointLightShader);
+	LightObjects->SetTexture("tSceneColor", SceneColor);
+	LightObjects->SetTexture("tSceneNormals", SceneNormal);
+	LightObjects->SetTexture("tSceneDepth", SceneDepth);
+	LightObjects->SetUniform("uLightRadius", LightRadius);
+	LightObjects->SetVertexBuffer(1, LightInstanceBuffer);
+	LightObjects->SetBlendMode(EBlendMode::Additive);
+	LightObjects->SetFeatureEnabled(EDrawFeature::DisableDepthTest, true);
+	LightObjects->SetFeatureEnabled(EDrawFeature::DisableDepthWrite, true);
+	LightObjects->SetFeatureEnabled(EDrawFeature::CullFront, true);
+	DeferredPass->AddSceneObject(LightObjects);
+	LightObjects->SetInstanceCount(NumLights);
+
 
 
 	///////////////
@@ -235,6 +253,10 @@ int main()
 			ImGui::RadioButton("Normals", DebugMode == 2);
 			ImGui::RadioButton("Depth", DebugMode == 3);
 			ImGui::RadioButton("Positions", DebugMode == 4);
+			
+			ImGui::Separator();
+
+			ImGui::SliderFloat("Light Sphere Radius", &LightRadius.Get(), 1.f, 30.f);
 
 			ImGui::End();
 		}
@@ -262,10 +284,7 @@ int main()
 		}
 
 		PostProcessObject->SetVisible(DebugMode >= 0);
-		for (auto LightObject : LightObjects)
-		{
-			LightObject->SetVisible(DebugMode == -1);
-		}
+		LightObjects->SetVisible(DebugMode == -1);
 
 		SceneFrameBuffer->ClearColorAndDepth();
 		BackBuffer->ClearColorAndDepth();
