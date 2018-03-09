@@ -246,6 +246,7 @@ int main()
 	LightInstanceBuffer->UploadData(Data);
 
 	CUniform<float> LightRadius = 20.f;
+	CUniform<bool> DebugLightVolumes = false;
 
 	CSimpleMeshSceneObject * LightObjects = new CSimpleMeshSceneObject();
 	LightObjects->SetMesh(SphereMesh);
@@ -254,6 +255,7 @@ int main()
 	LightObjects->SetTexture("tSceneNormals", SceneNormal);
 	LightObjects->SetTexture("tSceneDepth", SceneDepth);
 	LightObjects->SetUniform("uLightRadius", LightRadius);
+	LightObjects->SetUniform("uDebugLightVolumes", DebugLightVolumes);
 	LightObjects->SetVertexBuffer(1, LightInstanceBuffer);
 	LightObjects->SetBlendMode(EBlendMode::Additive);
 	LightObjects->SetFeatureEnabled(EDrawFeature::DisableDepthTest, true);
@@ -302,6 +304,7 @@ int main()
 			
 			ImGui::Separator();
 
+			ImGui::Checkbox("Debug Light Volumes?", & DebugLightVolumes.Get());
 			ImGui::SliderFloat("Light Sphere Radius", &LightRadius.Get(), 1.f, 30.f);
 
 			static int LightCount = NumLights;

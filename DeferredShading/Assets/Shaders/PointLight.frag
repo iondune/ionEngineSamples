@@ -13,6 +13,8 @@ uniform sampler2D tSceneColor;
 uniform sampler2D tSceneNormals;
 uniform sampler2D tSceneDepth;
 
+uniform bool uDebugLightVolumes;
+
 
 vec3 reconstructWorldspacePosition(vec2 texCoords)
 {
@@ -44,7 +46,11 @@ void main()
 	float attenuation = 1.0 - (distance / radius);
 
 	outColor.rgb = texture(tSceneColor, TexCoords).rgb * diffuse * fColor * attenuation;
-	// outColor.rgb = fColor;
+
+	if (uDebugLightVolumes)
+	{
+		outColor = vec4(fColor, 0.0);
+	}
 
 	if (abs(length(normal)) < 0.01)
 	{
