@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InverseKinematics", "Invers
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeferredShading", "DeferredShading\DeferredShading.vcxproj", "{908BF03E-C2BF-44CA-938D-FAB466C9C05E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentMapping", "EnvironmentMapping\EnvironmentMapping.vcxproj", "{CE860433-4AAF-471F-B90D-1C370C447487}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -57,6 +59,10 @@ Global
 		{908BF03E-C2BF-44CA-938D-FAB466C9C05E}.Debug|x64.Build.0 = Debug|x64
 		{908BF03E-C2BF-44CA-938D-FAB466C9C05E}.Release|x64.ActiveCfg = Release|x64
 		{908BF03E-C2BF-44CA-938D-FAB466C9C05E}.Release|x64.Build.0 = Release|x64
+		{CE860433-4AAF-471F-B90D-1C370C447487}.Debug|x64.ActiveCfg = Debug|x64
+		{CE860433-4AAF-471F-B90D-1C370C447487}.Debug|x64.Build.0 = Debug|x64
+		{CE860433-4AAF-471F-B90D-1C370C447487}.Release|x64.ActiveCfg = Release|x64
+		{CE860433-4AAF-471F-B90D-1C370C447487}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
