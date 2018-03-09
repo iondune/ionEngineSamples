@@ -1,7 +1,6 @@
 
 #version 330
 
-in vec2 fTexCoords;
 in vec3 fColor;
 in vec3 fPosition;
 
@@ -27,12 +26,14 @@ vec3 reconstructWorldspacePosition(vec2 texCoords)
 
 void main()
 {
+	vec2 TexCoords = gl_FragCoord.xy / vec2(textureSize(tSceneDepth, 0));
+
 	outColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-	vec3 normal = texture(tSceneNormals, fTexCoords).rgb;
+	vec3 normal = texture(tSceneNormals, TexCoords).rgb;
 	normal = normal * 2.0 - vec3(1.0);
 
-	vec3 world = reconstructWorldspacePosition(fTexCoords);
+	vec3 world = reconstructWorldspacePosition(TexCoords);
 	vec3 light = normalize(fPosition - world);
 	float distance = length(fPosition - world);
 
@@ -45,6 +46,6 @@ void main()
 	float denom = distance/radius + 1;
 	float attenuation = max((1 / (denom*denom) - cutoff) / (1 - cutoff), 0);
 
-	outColor.rgb = texture(tSceneColor, fTexCoords).rgb * diffuse * fColor * attenuation;
+	outColor.rgb = texture(tSceneColor, TexCoords).rgb * diffuse * fColor * attenuation;
 	// outColor.rgb = fColor;
 }
