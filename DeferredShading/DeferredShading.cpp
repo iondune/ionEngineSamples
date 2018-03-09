@@ -267,6 +267,13 @@ int main()
 
 			ImGui::SliderFloat("Light Sphere Radius", &LightRadius.Get(), 1.f, 30.f);
 
+			static int LightCount = NumLights;
+			if (ImGui::SliderInt("Light Count", & LightCount, 0, NumLights))
+			{
+				LightObjects->SetInstanceCount(LightCount);
+				LightPoints->SetInstanceCount(LightCount);
+			}
+
 			ImGui::End();
 		}
 
