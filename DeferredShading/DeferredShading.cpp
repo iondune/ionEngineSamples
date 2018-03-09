@@ -81,6 +81,7 @@ int main()
 	CSimpleMesh * PlaneMesh = CGeometryCreator::CreatePlane(vec2f(100.f));
 
 	SharedPointer<IShader> GeometryShader = AssetManager->LoadShader("Geometry");
+	SharedPointer<IShader> GeometryInstancedShader = AssetManager->LoadShader("GeometryInstanced");
 	SharedPointer<IShader> DeferredDebugShader = AssetManager->LoadShader("Debug");
 	SharedPointer<IShader> DeferredPointLightShader = AssetManager->LoadShader("PointLight");
 
@@ -226,6 +227,14 @@ int main()
 	DeferredPass->AddSceneObject(LightObjects);
 	LightObjects->SetInstanceCount(NumLights);
 
+	CSimpleMeshSceneObject * LightPoints = new CSimpleMeshSceneObject();
+	LightPoints->SetMesh(SphereMesh);
+	LightPoints->SetShader(GeometryInstancedShader);
+	LightPoints->SetScale(0.2f);
+	LightPoints->SetVertexBuffer(1, LightInstanceBuffer);
+	LightPoints->SetRenderCategory(1);
+	RenderPass->AddSceneObject(LightPoints);
+	LightPoints->SetInstanceCount(NumLights);
 
 
 	///////////////

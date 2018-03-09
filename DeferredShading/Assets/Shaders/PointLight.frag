@@ -48,4 +48,10 @@ void main()
 
 	outColor.rgb = texture(tSceneColor, TexCoords).rgb * diffuse * fColor * attenuation;
 	// outColor.rgb = fColor;
+
+	if (abs(length(normal)) < 0.01)
+	{
+		outColor.rgb = texture(tSceneColor, TexCoords).rgb;
+		outColor.a = 0.0;
+	}
 }
