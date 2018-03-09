@@ -207,7 +207,7 @@ int main()
 	ColorGradeObject->SetTexture("tSceneColor", HDRColor);
 	GradePass->AddSceneObject(ColorGradeObject);
 
-	const int NumLights = 100;
+	const int NumLights = 150;
 
 	SharedPointer<Graphics::IVertexBuffer> LightInstanceBuffer = GraphicsAPI->CreateVertexBuffer();
 	LightInstanceBuffer->SetInstancingEnabled(true);
@@ -218,7 +218,14 @@ int main()
 	};
 	LightInstanceBuffer->SetInputLayout(InstanceLayout, ION_ARRAYSIZE(InstanceLayout));
 
+	struct SPointLight
+	{
+		vec3f Position;
+		float T;
+	};
+
 	vector<float> Data;
+	vector<SPointLight> PointLights;
 	for (int i = 0; i < NumLights; ++ i)
 	{
 		const vec3f LightPosition = vec3f(nrand() * 30.f, frand() * 0.5f, nrand() * 30.f);
@@ -230,6 +237,11 @@ int main()
 		Data.push_back(LightColor.Red);
 		Data.push_back(LightColor.Green);
 		Data.push_back(LightColor.Blue);
+
+		SPointLight Light;
+		Light.Position = LightPosition;
+		Light.T = frand() * 6.28f;
+		PointLights.push_back(Light);
 	}
 	LightInstanceBuffer->UploadData(Data);
 
@@ -269,6 +281,7 @@ int main()
 	{
 		TimeManager->Update();
 		const float Time = (float) TimeManager->GetRunTime();
+		const float Elapsed = (float) TimeManager->GetElapsedTime();
 
 		GUIManager->NewFrame();
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_Once);
@@ -325,10 +338,12 @@ int main()
 
 		for (int i = 0; i < NumLights; ++ i)
 		{
-			const vec3f LightPosition = vec3f(nrand() * 30.f, frand() * 0.5f, nrand() * 30.f);
-			const color3f LightColor = Color::HSV(frand(), 1.f, 1.f);
+			const float Radius = 5.f;
+			const float T = Time * 0.2f + PointLights[i].T;
 
-			Data[i * 6 + 1] += sin(Time * 0.5f + 0.3f * Data[i * 6 + 0] - 0.83f * Data[i * 6 + 2]) * 0.01f;
+			Data[i * 6 + 0] = PointLights[i].Position.X + cos(T) * Radius;
+			Data[i * 6 + 1] = PointLights[i].Position.Y + sin(Time + PointLights[i].T) + 1.f;
+			Data[i * 6 + 2] = PointLights[i].Position.Z + sin(T) * Radius;
 		}
 		LightInstanceBuffer->UploadData(Data);
 
