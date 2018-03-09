@@ -198,7 +198,7 @@ int main()
 	vector<float> Data;
 	for (int i = 0; i < NumLights; ++ i)
 	{
-		const vec3f LightPosition = vec3f(nrand() * 30.f, frand() * 3.f, nrand() * 30.f);
+		const vec3f LightPosition = vec3f(nrand() * 30.f, frand() * 0.5f, nrand() * 30.f);
 		const color3f LightColor = Color::HSV(frand(), 1.f, 1.f);
 
 		Data.push_back(LightPosition.X);
@@ -210,7 +210,7 @@ int main()
 	}
 	LightInstanceBuffer->UploadData(Data);
 
-	CUniform<float> LightRadius = 15.f;
+	CUniform<float> LightRadius = 20.f;
 
 	CSimpleMeshSceneObject * LightObjects = new CSimpleMeshSceneObject();
 	LightObjects->SetMesh(SphereMesh);
