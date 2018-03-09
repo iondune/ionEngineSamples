@@ -245,6 +245,7 @@ int main()
 	while (WindowManager->Run())
 	{
 		TimeManager->Update();
+		const float Time = (float) TimeManager->GetRunTime();
 
 		GUIManager->NewFrame();
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_Once);
@@ -298,6 +299,15 @@ int main()
 		{
 			DebugMode = 4;
 		}
+
+		for (int i = 0; i < NumLights; ++ i)
+		{
+			const vec3f LightPosition = vec3f(nrand() * 30.f, frand() * 0.5f, nrand() * 30.f);
+			const color3f LightColor = Color::HSV(frand(), 1.f, 1.f);
+
+			Data[i * 6 + 1] += sin(Time * 0.5f + 0.3f * Data[i * 6 + 0] - 0.83f * Data[i * 6 + 2]) * 0.01f;
+		}
+		LightInstanceBuffer->UploadData(Data);
 
 		PostProcessObject->SetVisible(DebugMode >= 0);
 		LightObjects->SetVisible(DebugMode == -1);
