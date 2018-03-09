@@ -71,6 +71,18 @@ int main()
 		Log::Error("Frame buffer not valid!");
 	}
 
+	SharedPointer<IFrameBuffer> HDRFrameBuffer = Context->CreateFrameBuffer();
+
+	SharedPointer<ITexture2D> HDRColor = GraphicsAPI->CreateTexture2D(Window->GetSize(), ITexture::EMipMaps::False, ITexture::EFormatComponents::RGBA, ITexture::EInternalFormatType::Fix16);
+	HDRColor->SetMinFilter(ITexture::EFilter::Nearest);
+	HDRColor->SetMagFilter(ITexture::EFilter::Nearest);
+	HDRColor->SetWrapMode(ITexture::EWrapMode::Clamp);
+	HDRFrameBuffer->AttachColorTexture(HDRColor, 0);
+	if (! HDRFrameBuffer->CheckCorrectness())
+	{
+		Log::Error("Frame buffer not valid!");
+	}
+
 
 
 	/////////////////
@@ -84,6 +96,7 @@ int main()
 	SharedPointer<IShader> GeometryInstancedShader = AssetManager->LoadShader("GeometryInstanced");
 	SharedPointer<IShader> DeferredDebugShader = AssetManager->LoadShader("Debug");
 	SharedPointer<IShader> DeferredPointLightShader = AssetManager->LoadShader("PointLight");
+	SharedPointer<IShader> GradeShader = AssetManager->LoadShader("Grade");
 
 
 
@@ -96,8 +109,12 @@ int main()
 	SceneManager->AddRenderPass(RenderPass);
 
 	CRenderPass * DeferredPass = new CRenderPass(Context);
-	DeferredPass->SetRenderTarget(BackBuffer);
+	DeferredPass->SetRenderTarget(HDRFrameBuffer);
 	SceneManager->AddRenderPass(DeferredPass);
+
+	CRenderPass * GradePass = new CRenderPass(Context);
+	GradePass->SetRenderTarget(BackBuffer);
+	SceneManager->AddRenderPass(GradePass);
 	
 	CPerspectiveCamera * Camera = new CPerspectiveCamera(Window->GetAspectRatio());
 	Camera->SetPosition(vec3f(-1.7f, 2.8f, 3.4f));
@@ -183,6 +200,12 @@ int main()
 	PostProcessObject->SetTexture("tSceneDepth", SceneDepth);
 	PostProcessObject->SetUniform("uMode", std::make_shared<CUniformReference<int>>(&DebugMode));
 	DeferredPass->AddSceneObject(PostProcessObject);
+
+	CSimpleMeshSceneObject * ColorGradeObject = new CSimpleMeshSceneObject();
+	ColorGradeObject->SetMesh(CGeometryCreator::CreateScreenTriangle());
+	ColorGradeObject->SetShader(GradeShader);
+	ColorGradeObject->SetTexture("tSceneColor", HDRColor);
+	GradePass->AddSceneObject(ColorGradeObject);
 
 	const int NumLights = 100;
 
@@ -313,7 +336,9 @@ int main()
 		LightObjects->SetVisible(DebugMode == -1);
 
 		SceneFrameBuffer->ClearColorAndDepth();
+		HDRFrameBuffer->ClearColorAndDepth();
 		BackBuffer->ClearColorAndDepth();
+
 		SceneManager->DrawAll();
 		GUIManager->Draw();
 		Window->SwapBuffers();
