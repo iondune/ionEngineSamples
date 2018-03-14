@@ -217,14 +217,17 @@ namespace ion
 			}
 
 			// Convert inboard/outboard to direction vectors
-			vec3f PreviousDirection = vec3f(1, 0, 0);
+			glm::mat4 CurrentTransform = glm::mat4(1.f);
 
 			for (int t = 0; t < Joints.size(); ++ t)
 			{
 				vec3f Direction = Normalize(Joints[t]->OutboardLocation - Joints[t]->InboardLocation);
 
-				vec3f const Axis = Cross(PreviousDirection, Direction);
-				float const Angle = ArcCos(Clamp(Dot(Direction, PreviousDirection), -1.f, 1.f)); // Clamp for numerical imprecision reasons
+				// Transform into local (joint) space
+				Direction.Transform(inverse(CurrentTransform), 0.f);
+
+				vec3f const Axis = Cross(vec3f(1, 0, 0), Direction);
+				float const Angle = ArcCos(Clamp(Dot(Direction, vec3f(1, 0, 0)), -1.f, 1.f)); // Clamp for numerical imprecision reasons
 
 				if (Axis.LengthSq() < ion::RoundingError32)
 				{
@@ -239,7 +242,7 @@ namespace ion
 					Joints[t]->Rotation = euler;
 				}
 
-				PreviousDirection = Direction;
+				CurrentTransform = CurrentTransform * Joints[t]->GetRotationMatrix();
 			}
 		}
 
