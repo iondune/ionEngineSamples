@@ -114,7 +114,7 @@ namespace ion
 		vector<SJoint *> Joints;
 		float Delta = DegToRad(30.f);
 		bool FullReset = false;
-		bool UseFABRIK = false;
+		bool UseFABRIK = true;
 
 		float GetValue(vec3f const & GoalPosition)
 		{
@@ -136,14 +136,19 @@ namespace ion
 
 			for (int i = 0; i < 500; ++ i)
 			{
-				if (UseFABRIK)
-				{
-					StepFABRIK(GoalPosition);
-				}
-				else
-				{
-					StepCCD(GoalPosition);
-				}
+				StepIK(GoalPosition);
+			}
+		}
+
+		void StepIK(vec3f const & GoalPosition)
+		{
+			if (UseFABRIK)
+			{
+				StepFABRIK(GoalPosition);
+			}
+			else
+			{
+				StepCCD(GoalPosition);
 			}
 		}
 
@@ -175,6 +180,9 @@ namespace ion
 					{
 					}
 				}
+
+				Joints[t]->InboardLocation = Joints[t]->GetInboardLocation();
+				Joints[t]->OutboardLocation = Joints[t]->GetOutboardLocation();
 			}
 
 			Delta /= 1.01f;
@@ -182,10 +190,35 @@ namespace ion
 
 		void StepFABRIK(vec3f const & GoalPosition)
 		{
+			vec3f RootPosition = Joints[0]->GetInboardLocation();
+
+			// First pass - front to back
+			vec3f CurrentGoal = GoalPosition;
+
 			for (int t = (int) Joints.size() - 1; t >= 0; -- t)
 			{
 				Joints[t]->InboardLocation = Joints[t]->GetInboardLocation();
 				Joints[t]->OutboardLocation = Joints[t]->GetOutboardLocation();
+
+				Joints[t]->OutboardLocation = CurrentGoal;
+				vec3f const CurrentLine = Normalize(Joints[t]->OutboardLocation - Joints[t]->InboardLocation);
+
+				Joints[t]->InboardLocation = Joints[t]->OutboardLocation - CurrentLine * Joints[t]->Length;
+				CurrentGoal = Joints[t]->InboardLocation;
+			}
+
+			// Second pass - back to front
+			CurrentGoal = RootPosition;
+
+			for (int t = 0; t < Joints.size(); ++ t)
+			{
+				Joints[t]->InboardLocation = CurrentGoal;
+				vec3f const CurrentLine = Normalize(Joints[t]->InboardLocation - Joints[t]->OutboardLocation);
+
+				Joints[t]->OutboardLocation = Joints[t]->InboardLocation - CurrentLine * Joints[t]->Length;
+				CurrentGoal = Joints[t]->OutboardLocation;
+			}
+
 			}
 		}
 

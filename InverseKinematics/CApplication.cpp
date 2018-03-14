@@ -117,13 +117,12 @@ void CApplication::SetupScene()
 	SceneManager->AddRenderPass(RenderPass);
 
 	FreeCamera = new CPerspectiveCamera(Window->GetAspectRatio());
-	FreeCamera->SetPosition(vec3f(0, 3, -5));
+	FreeCamera->SetPosition(vec3f(0, 5, -1));
+	FreeCamera->SetLookAtTarget(vec3f(0, 0, 0));
 	FreeCamera->SetFocalLength(0.4f);
-	FreeCamera->SetFarPlane(10000.f);
+	FreeCamera->SetFarPlane(1000.f);
 
 	CCameraController * Controller = new CCameraController(FreeCamera);
-	Controller->SetTheta(15.f * Constants32::Pi / 48.f);
-	Controller->SetPhi(-Constants32::Pi / 16.f);
 	Window->AddListener(Controller);
 	TimeManager->MakeUpdateTick(0.02)->AddListener(Controller);
 
@@ -197,14 +196,26 @@ void CApplication::MainLoop()
 			ImGui::Checkbox("Auto-Solve", &AutoSolve);
 			ImGui::SameLine();
 			ImGui::Checkbox("Full Reset", &Solver.FullReset);
+			if (ImGui::RadioButton("CCD", Solver.UseFABRIK == false))
+			{
+				Solver.UseFABRIK = false;
+			}
+			if (ImGui::RadioButton("FABRIK", Solver.UseFABRIK == true))
+			{
+				Solver.UseFABRIK = true;
+			}
 			ImGui::DragFloat("Solver Step", &Solver.Delta);
 			ImGui::Checkbox("Clear Points", &ClearPoints);
+			if (ImGui::Button("Single Solver Step"))
+			{
+				Solver.StepIK(GoalPosition);
+			}
 			ImGui::End();
 		}
 
 		if (Window->IsKeyDown(EKey::Space))
 		{
-			Solver.StepCCD(GoalPosition);
+			Solver.StepIK(GoalPosition);
 		}
 
 		if (ClearPoints)
@@ -218,12 +229,13 @@ void CApplication::MainLoop()
 			if (i % 2)
 			{
 				NodeObjects[i]->SetTransformation(Solver.Joints[i/2]->GetOutboardTransformation() * glm::scale(glm::mat4(1.f), glm::vec3(0.15f)));
-				DebugLines->AddStar(Solver.Joints[i/2]->GetOutboardLocation(), 0.06f, Color::HSV((float) i / NodeObjects.size(), 0.8f, 0.9f));
-				DebugLines->AddStar(Solver.Joints[i/2]->GetInboardLocation(), 0.04f, Color::HSV((float) i / NodeObjects.size(), 0.8f, 0.9f));
 			}
 			else
 			{
 				NodeObjects[i]->SetTransformation(Solver.Joints[i/2]->GetHalfpointTransformation() * glm::scale(glm::mat4(1.f), glm::vec3(0.5f, 0.1f, 0.1f)));
+
+				DebugLines->AddStar(Solver.Joints[i/2]->OutboardLocation, 0.06f, Color::HSV((float) i / NodeObjects.size(), 0.8f, 0.9f));
+				DebugLines->AddBox(Solver.Joints[i/2]->InboardLocation, 0.04f, Color::HSV((float) i / NodeObjects.size(), 0.8f, 0.9f));
 			}
 		}
 
