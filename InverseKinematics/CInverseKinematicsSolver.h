@@ -20,41 +20,38 @@ namespace ion
 			// For FABRIK
 			vec3f InboardLocation, OutboardLocation;
 
-			glm::mat4 GetLocalOutboardTransformation()
-			{
-				glm::mat4 Trans = glm::translate(glm::mat4(1.f), glm::vec3(Length, 0, 0));
-
-				glm::mat4 Rot = glm::mat4(1.f);
-				Rot = glm::rotate(Rot, Rotation.Z, glm::vec3(0, 0, 1));
-				Rot = glm::rotate(Rot, Rotation.Y, glm::vec3(0, 1, 0));
-				Rot = glm::rotate(Rot, Rotation.X, glm::vec3(1, 0, 0));
-
-				return Rot * Trans;
-			}
-
-			glm::mat4 GetLocalHalfpointTransformation()
-			{
-				glm::mat4 Trans = glm::translate(glm::mat4(1.f), glm::vec3(Length / 2.f, 0, 0));
-
-				glm::mat4 Rot = glm::mat4(1.f);
-				Rot = glm::rotate(Rot, Rotation.Z, glm::vec3(0, 0, 1));
-				Rot = glm::rotate(Rot, Rotation.Y, glm::vec3(0, 1, 0));
-				Rot = glm::rotate(Rot, Rotation.X, glm::vec3(1, 0, 0));
-
-				return Rot * Trans;
-			}
-
-			glm::mat4 GetLocalInboardTransformation()
+			glm::mat4 GetRotationMatrix() const
 			{
 				glm::mat4 Rot = glm::mat4(1.f);
-				Rot = glm::rotate(Rot, Rotation.Z, glm::vec3(0, 0, 1));
-				Rot = glm::rotate(Rot, Rotation.Y, glm::vec3(0, 1, 0));
 				Rot = glm::rotate(Rot, Rotation.X, glm::vec3(1, 0, 0));
+				Rot = glm::rotate(Rot, Rotation.Y, glm::vec3(0, 1, 0));
+				Rot = glm::rotate(Rot, Rotation.Z, glm::vec3(0, 0, 1));
 
 				return Rot;
 			}
 
-			glm::mat4 GetOutboardTransformation()
+			glm::mat4 GetLocalOutboardTransformation() const
+			{
+				glm::mat4 Trans = glm::translate(glm::mat4(1.f), glm::vec3(Length, 0, 0));
+				glm::mat4 Rot = GetRotationMatrix();
+
+				return Rot * Trans;
+			}
+
+			glm::mat4 GetLocalHalfpointTransformation() const
+			{
+				glm::mat4 Trans = glm::translate(glm::mat4(1.f), glm::vec3(Length / 2.f, 0, 0));
+				glm::mat4 Rot = GetRotationMatrix();
+
+				return Rot * Trans;
+			}
+
+			glm::mat4 GetLocalInboardTransformation() const
+			{
+				return GetRotationMatrix();
+			}
+
+			glm::mat4 GetOutboardTransformation() const
 			{
 				glm::mat4 Trans = GetLocalOutboardTransformation();
 
@@ -66,7 +63,7 @@ namespace ion
 				return Trans;
 			}
 
-			glm::mat4 GetHalfpointTransformation()
+			glm::mat4 GetHalfpointTransformation() const
 			{
 				glm::mat4 Trans = GetLocalHalfpointTransformation();
 
@@ -76,7 +73,7 @@ namespace ion
 				return Trans;
 			}
 
-			glm::mat4 GetInboardTransformation()
+			glm::mat4 GetInboardTransformation() const
 			{
 				glm::mat4 Trans = GetLocalInboardTransformation();
 
@@ -86,7 +83,7 @@ namespace ion
 				return Trans;
 			}
 
-			vec3f const GetOutboardLocation()
+			vec3f GetOutboardLocation() const
 			{
 				glm::vec4 v(0, 0, 0, 1);
 				v = GetOutboardTransformation() * v;
@@ -94,7 +91,7 @@ namespace ion
 				return vec3f(v.x, v.y, v.z);
 			}
 
-			vec3f const GetHalfpointLocation()
+			vec3f GetHalfpointLocation() const
 			{
 				glm::vec4 v(0, 0, 0, 1);
 				v = GetHalfpointTransformation() * v;
@@ -102,7 +99,7 @@ namespace ion
 				return vec3f(v.x, v.y, v.z);
 			}
 
-			vec3f const GetInboardLocation()
+			vec3f GetInboardLocation() const
 			{
 				glm::vec4 v(0, 0, 0, 1);
 				v = GetInboardTransformation() * v;
@@ -116,7 +113,7 @@ namespace ion
 		bool FullReset = false;
 		bool UseFABRIK = true;
 
-		float GetValue(vec3f const & GoalPosition)
+		float GetValue(vec3f const & GoalPosition) const
 		{
 			vec3f const HandLoc = Joints.back()->GetOutboardLocation();
 			return Sq(GoalPosition.GetDistanceFrom(HandLoc));
@@ -156,7 +153,7 @@ namespace ion
 		{
 			for (int t = 0; t < Joints.size(); ++t)
 			{
-				for (int u = 0; u < 3; ++ u)
+				for (int u = 2; u >= 0; -- u)
 				{
 					float const LastValue = GetValue(GoalPosition);
 					Joints[t]->Rotation[u] += Delta;
@@ -219,6 +216,30 @@ namespace ion
 				CurrentGoal = Joints[t]->OutboardLocation;
 			}
 
+			// Convert inboard/outboard to direction vectors
+			vec3f PreviousDirection = vec3f(1, 0, 0);
+
+			for (int t = 0; t < Joints.size(); ++ t)
+			{
+				vec3f Direction = Normalize(Joints[t]->OutboardLocation - Joints[t]->InboardLocation);
+
+				vec3f const Axis = Cross(PreviousDirection, Direction);
+				float const Angle = ArcCos(Clamp(Dot(Direction, PreviousDirection), -1.f, 1.f)); // Clamp for numerical imprecision reasons
+
+				if (Axis.LengthSq() < ion::RoundingError32)
+				{
+					Joints[t]->Rotation = vec3f(0, Angle, 0);
+				}
+				else
+				{
+					glm::mat4 rotation = glm::rotate(glm::mat4(1.f), Angle, Axis.ToGLM());
+					vec3f euler;
+					glm::extractEulerAngleXYZ(rotation, euler.X, euler.Y, euler.Z);
+
+					Joints[t]->Rotation = euler;
+				}
+
+				PreviousDirection = Direction;
 			}
 		}
 
