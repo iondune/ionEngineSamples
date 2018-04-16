@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeferredShading", "Deferred
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentMapping", "EnvironmentMapping\EnvironmentMapping.vcxproj", "{CE860433-4AAF-471F-B90D-1C370C447487}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CookTorrance", "CookTorrance\CookTorrance.vcxproj", "{97B50CD8-4387-472B-AB10-B0EF2386FD43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -63,6 +65,10 @@ Global
 		{CE860433-4AAF-471F-B90D-1C370C447487}.Debug|x64.Build.0 = Debug|x64
 		{CE860433-4AAF-471F-B90D-1C370C447487}.Release|x64.ActiveCfg = Release|x64
 		{CE860433-4AAF-471F-B90D-1C370C447487}.Release|x64.Build.0 = Release|x64
+		{97B50CD8-4387-472B-AB10-B0EF2386FD43}.Debug|x64.ActiveCfg = Debug|x64
+		{97B50CD8-4387-472B-AB10-B0EF2386FD43}.Debug|x64.Build.0 = Debug|x64
+		{97B50CD8-4387-472B-AB10-B0EF2386FD43}.Release|x64.ActiveCfg = Release|x64
+		{97B50CD8-4387-472B-AB10-B0EF2386FD43}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
