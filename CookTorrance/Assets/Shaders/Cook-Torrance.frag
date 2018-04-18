@@ -104,8 +104,8 @@ float GGX_Distribution(vec3 H, vec3 N, float alpha)
 float GGX_Partial(vec3 v, vec3 g, vec3 m, float alpha)
 {
 	float chi = chi_positive(dot(v, m) / dot(v, g));
-	float tan_theta = (1.0 - sq(dot(v, g))) / sq(dot(v, g));
-	float tan2theta = sq(tan_theta);
+	float tan2theta = (1.0 - sq(dot(v, g))) / sq(dot(v, g));
+	// float tan2theta = sq(tan_theta);
 
 	return chi * 2.0 / (1.0 + sqrt(1.0 + sq(alpha) * tan2theta));
 }
